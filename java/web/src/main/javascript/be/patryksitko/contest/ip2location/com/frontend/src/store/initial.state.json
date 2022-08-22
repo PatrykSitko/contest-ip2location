@@ -1,0 +1,19 @@
+{
+  "state": {
+    "window": {
+      "inner": null,
+      "outer": null
+    },
+    "authentication": {
+      "fingerprint": null,
+      "token": null
+    },
+    "updateTick": 0
+  },
+  "router": {
+    "pathname": "/",
+    "search": "",
+    "queries": {},
+    "hash": ""
+  }
+}
