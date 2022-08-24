@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
@@ -34,7 +35,8 @@ import lombok.ToString;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor(onConstructor = @__(@JsonCreator), access = AccessLevel.PUBLIC)
 @JsonRootName(value = "user", namespace = "users")
-@JsonPropertyOrder({ "id", "firstname", "lastname", "email" })
+@JsonIgnoreProperties({ "id" })
+@JsonPropertyOrder({ "firstname", "lastname", "email" })
 @Entity
 @Table(name = "users")
 public class User {
