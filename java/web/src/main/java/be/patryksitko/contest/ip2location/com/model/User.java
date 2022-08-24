@@ -32,7 +32,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor = @__(@JsonCreator), access = AccessLevel.PUBLIC)
 @JsonRootName(value = "user", namespace = "users")
 @JsonPropertyOrder({ "id", "firstname", "lastname", "email" })
 @Entity
