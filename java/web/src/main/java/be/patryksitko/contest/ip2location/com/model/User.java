@@ -1,8 +1,11 @@
 package be.patryksitko.contest.ip2location.com.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -18,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -33,32 +35,43 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-@AllArgsConstructor(onConstructor = @__(@JsonCreator), access = AccessLevel.PUBLIC)
+// @AllArgsConstructor(onConstructor = @__(@JsonCreator), access =
+// AccessLevel.PUBLIC)
 @JsonRootName(value = "user", namespace = "users")
 @JsonIgnoreProperties({ "id" })
 @JsonPropertyOrder({ "firstname", "lastname", "email" })
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
+
+    @JsonIgnore
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private static final long serialVersionUID = 1L;
 
     @Id
     @NonNull
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @JacksonInject
+    @Column(name = "id", nullable = false)
     private Long id;
 
+    @NonNull
     @JsonProperty("firstname")
     @Column(name = "firstname", nullable = false)
     public String firstname;
 
+    @NonNull
     @JsonProperty("lastname")
     @Column(name = "lastname", nullable = false)
     public String lastname;
 
+    @NonNull
     @JsonProperty("email")
     @Column(name = "email", nullable = false, unique = true)
     public String email;
 
+    @NonNull
     @Getter(onMethod = @__(@JsonIgnore))
     @Setter(onMethod = @__(@JsonProperty("password")))
     @JsonAlias({ "password", "passwd" })
@@ -72,5 +85,13 @@ public class User {
         this.lastname = lastname;
         this.email = email;
         this.password = new BCryptPasswordEncoder().encode(password);
+    }
+
+    @JsonCreator
+    public User(@JsonProperty("id") Long id, @JsonProperty("firstname") String firstname,
+            @JsonProperty("lastname") String lastname,
+            @JsonProperty("email") String email, @JsonProperty("password") String password) {
+        this(firstname, lastname, email, password);
+        this.id = id;
     }
 }
