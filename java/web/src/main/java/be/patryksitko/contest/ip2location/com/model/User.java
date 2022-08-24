@@ -33,7 +33,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = false)
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 // @AllArgsConstructor(onConstructor = @__(@JsonCreator), access =
 // AccessLevel.PUBLIC)
@@ -68,7 +68,6 @@ public class User implements Serializable {
 
     @NonNull
     @JsonProperty("email")
-    @EqualsAndHashCode.Include()
     @Column(name = "email", nullable = false, unique = true)
     public String email;
 
