@@ -1,4 +1,4 @@
-package be.patryksitko.contest.ip2location.com.repository;
+package be.patryksitko.contest.ip2location.com.repositoryDAO;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

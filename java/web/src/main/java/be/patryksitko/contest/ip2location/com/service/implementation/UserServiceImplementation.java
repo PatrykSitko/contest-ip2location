@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import be.patryksitko.contest.ip2location.com.model.User;
-import be.patryksitko.contest.ip2location.com.repository.UserRepository;
+import be.patryksitko.contest.ip2location.com.repositoryDAO.UserRepository;
 import be.patryksitko.contest.ip2location.com.service.UserService;
 import be.patryksitko.contest.ip2location.com.service.exception.UserCreatedException;
 import be.patryksitko.contest.ip2location.com.service.exception.UserExistsException;
