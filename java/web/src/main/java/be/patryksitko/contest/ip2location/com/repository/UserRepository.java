@@ -1,9 +1,11 @@
 package be.patryksitko.contest.ip2location.com.repository;
 
-import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import be.patryksitko.contest.ip2location.com.model.User;
 
-public interface UserRepository extends Repository<User, Long> {
+@Repository
+public interface UserRepository extends CrudRepository<User, Long> {
 
 }
