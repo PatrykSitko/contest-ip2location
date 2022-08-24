@@ -1,6 +1,6 @@
 import React from "react";
 function RegisterPage() {
-  return <></>;
+  return <>register</>;
 }
 
 export default RegisterPage;
