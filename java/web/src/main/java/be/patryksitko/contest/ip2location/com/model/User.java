@@ -76,7 +76,6 @@ public class User implements Serializable {
     @Getter(onMethod = @__(@JsonIgnore))
     @Setter(onMethod = @__(@JsonProperty("password")))
     @JsonAlias({ "password", "passwd" })
-    @EqualsAndHashCode.Include()
     @Column(name = "password", nullable = false)
     public String password;
 
