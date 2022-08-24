@@ -1,4 +1,4 @@
-package be.patryksitko.contest.ip2location.com.entity;
+package be.patryksitko.contest.ip2location.com.model;
 
 import java.io.Serializable;
 
