@@ -7,5 +7,5 @@ import be.patryksitko.contest.ip2location.com.model.User;
 
 @Repository
 public interface UserRepository extends CrudRepository<User, Long> {
-
+    User findByEmail(String email);
 }
