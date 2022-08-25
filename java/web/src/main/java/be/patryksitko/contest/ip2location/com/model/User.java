@@ -11,7 +11,6 @@ import javax.persistence.Table;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,7 +51,6 @@ public class User implements Serializable {
     @Id
     @NonNull
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JacksonInject
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -79,19 +77,13 @@ public class User implements Serializable {
     public String password;
 
     @JsonCreator
-    public User(@JsonProperty("firstname") String firstname, @JsonProperty("lastname") String lastname,
+    public User(@JsonProperty("id") Long id, @JsonProperty("firstname") String firstname,
+            @JsonProperty("lastname") String lastname,
             @JsonProperty("email") String email, @JsonProperty("password") String password) {
+        this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
         this.password = new BCryptPasswordEncoder().encode(password);
-    }
-
-    @JsonCreator
-    public User(@JsonProperty("id") Long id, @JsonProperty("firstname") String firstname,
-            @JsonProperty("lastname") String lastname,
-            @JsonProperty("email") String email, @JsonProperty("password") String password) {
-        this(firstname, lastname, email, password);
-        this.id = id;
     }
 }
