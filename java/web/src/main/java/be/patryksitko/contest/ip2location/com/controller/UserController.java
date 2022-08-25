@@ -22,6 +22,8 @@ public class UserController {
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody User createUser(@RequestBody @Valid User user) {
-        return userService.createUser(user);
+        final User createdUser = userService.createUser(user);
+        createdUser.setPassword("hidden");
+        return createdUser;
     }
 }
