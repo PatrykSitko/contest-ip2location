@@ -5,5 +5,5 @@ import be.patryksitko.contest.ip2location.com.service.exception.UserExistsExcept
 
 public interface UserService {
 
-    public User createUser(User user) throws UserExistsException;
+    public User registerUser(User user) throws UserExistsException;
 }

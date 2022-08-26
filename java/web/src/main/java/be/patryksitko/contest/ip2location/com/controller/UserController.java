@@ -20,10 +20,10 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody User createUser(@RequestBody @Valid User user) {
-        final User createdUser = userService.createUser(user);
-        createdUser.setPassword("hidden");
-        return createdUser;
+    @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody User registerUser(@RequestBody @Valid User user) {
+        final User registerdUser = userService.registerUser(user);
+        registerdUser.setPassword("hidden");
+        return registerdUser;
     }
 }
