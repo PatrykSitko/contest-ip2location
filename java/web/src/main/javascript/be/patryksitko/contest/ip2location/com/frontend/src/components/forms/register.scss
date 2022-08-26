@@ -1,0 +1,66 @@
+.register-form-wrapper {
+  position: absolute;
+  left: 50%;
+  top: 35%;
+  transform: translate(-50%, -50%);
+  button.go-back {
+    margin-bottom: -440px;
+    margin-left: -20px;
+  }
+  .register-form {
+    width: 350px;
+    height: 360px;
+    padding: 1rem;
+    border: 0.2rem solid #ececec;
+    border-radius: 8px;
+    margin-right: 0;
+    margin-left: 0;
+    color: #212529;
+    transition: ease all 0.5s;
+    .text-muted {
+      display: block;
+      margin: auto;
+      white-space: nowrap;
+      text-align: center;
+    }
+    button.register {
+      min-width: 100%;
+    }
+    label.password-label {
+      display: inline-block;
+      margin-top: 7px;
+      width: 40%;
+      text-align: right;
+      padding-right: 7px;
+      white-space: nowrap;
+    }
+    div.form-group-password {
+      display: flex;
+      float: right;
+      max-width: max-content;
+    }
+    div.given-names-wrapper {
+      display: inline-block;
+      width: 50%;
+    }
+    label.email {
+      width: 100%;
+      text-align: center;
+    }
+    label.given-names {
+      text-align: center;
+    }
+    label.given-names,
+    input.given-names {
+      width: 95%;
+    }
+    input[type="password"] {
+      float: right;
+      display: inline;
+      width: 60%;
+    }
+    input.type-password {
+      width: 79%;
+    }
+  }
+}
