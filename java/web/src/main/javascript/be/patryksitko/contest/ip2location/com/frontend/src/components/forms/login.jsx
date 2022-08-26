@@ -2,7 +2,7 @@ import React from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { push } from "redux-first-routing";
 import "./login.scss";
 
@@ -11,6 +11,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 function LoginForm({ changePath }) {
+  const navigateTo = useNavigate();
   return (
     <Form className="login-form">
       <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -38,6 +39,7 @@ function LoginForm({ changePath }) {
         onClick={(action) => {
           action.preventDefault();
           changePath("/register");
+          navigateTo("/register");
         }}
       >
         Register
