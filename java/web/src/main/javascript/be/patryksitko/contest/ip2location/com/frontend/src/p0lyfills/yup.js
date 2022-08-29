@@ -6,7 +6,7 @@ function strongPasswordMethod() {
   return this.test("strongPasswordTest", null, function (value) {
     const { path, createError } = this;
     switch (Boolean(value)) {
-      case /^.{8,}$/.test(value):
+      case !/^.{8,}$/.test(value):
         return createError({
           path,
           message: "Password must contain atleast 8 characters.",
