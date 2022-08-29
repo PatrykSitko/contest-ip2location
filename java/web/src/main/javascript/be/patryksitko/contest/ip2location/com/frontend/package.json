@@ -19,7 +19,8 @@
     "redux-first-routing": "^0.3.0",
     "redux-thunk": "^2.4.1",
     "sass": "^1.54.5",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "yup": "^0.32.11"
   },
   "scripts": {
     "start": "react-scripts start",
