@@ -20,7 +20,7 @@
       text-align: center;
     }
     button.go-back {
-      margin-left: -60px;
+      margin-left: -50px;
       white-space: nowrap;
     }
     button.register {
@@ -63,10 +63,8 @@
     input[type="password"] {
       float: right;
       display: inline;
-      width: 60%;
-    }
-    input.type-password {
-      width: 79%;
+      min-width: 60%;
+      max-width: 60%;
     }
     .invalid-feedback {
       text-align: center;
@@ -79,6 +77,11 @@
       margin-top: 0.25rem;
       font-size: 0.875em;
       color: #dc3545;
+    }
+    input[disabled] {
+      color: #dcdad1 !important;
+      background-image: none !important;
+      background-color: #e9ecef !important;
     }
   }
 }
