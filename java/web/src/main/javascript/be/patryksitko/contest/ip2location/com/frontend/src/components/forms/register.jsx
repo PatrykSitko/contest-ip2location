@@ -17,11 +17,7 @@ const schema = yup.object({
     .matches(/^[a-zA-Z]+$/, "Must only contain letters.")
     .required("Lastname is required."),
   email: yup.string().email().required("Email is required."),
-  password: yup
-    .string()
-    .min(8, "Password must contain atleast 8 characters.")
-    .strongPassword()
-    .required("Password is required."),
+  password: yup.string().strongPassword().required("Password is required."),
   repassword: yup.string().required("Retyping password is required."),
 });
 
