@@ -2,8 +2,8 @@ import React from "react";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import "./App.scss";
-import "./fillers";
 import Paths from "./paths";
+import "./polyfills";
 import store from "./store";
 import { browserHistory } from "./store/configuration";
 
