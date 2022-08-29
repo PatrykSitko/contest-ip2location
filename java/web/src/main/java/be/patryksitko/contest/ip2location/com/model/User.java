@@ -45,7 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 @JsonPropertyOrder({ "firstname", "lastname", "email" })
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
+public class User implements Serializable, Cloneable {
 
     @JsonIgnore
     @Getter(AccessLevel.NONE)
@@ -96,6 +96,15 @@ public class User implements Serializable {
         try {
             return objectMapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
+    public User clone() {
+        try {
+            return (User) super.clone();
+        } catch (CloneNotSupportedException e) {
             log.error(e.getMessage());
             return null;
         }
