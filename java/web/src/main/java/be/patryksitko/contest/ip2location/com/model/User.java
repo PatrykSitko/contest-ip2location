@@ -4,14 +4,14 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -38,8 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = false)
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-// @AllArgsConstructor(onConstructor = @__(@JsonCreator), access =
-// AccessLevel.PUBLIC)
+@AllArgsConstructor(onConstructor = @__(@JsonCreator), access = AccessLevel.PUBLIC)
 @JsonRootName(value = "user", namespace = "users")
 @JsonIgnoreProperties({ "id" })
 @JsonPropertyOrder({ "firstname", "lastname", "email" })
@@ -54,6 +54,7 @@ public class User implements Serializable, Cloneable {
 
     @Id
     @NonNull
+    @JsonProperty("id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_id", nullable = false, unique = true)
     private Long id;
@@ -69,17 +70,10 @@ public class User implements Serializable, Cloneable {
     public String lastname;
 
     @NonNull
-    @JsonProperty("email")
-    @Column(name = "email", nullable = false, unique = true)
-    public String email;
-
-    @NonNull
-    @Getter(onMethod = @__(@JsonIgnore))
-    @Setter(onMethod = @__(@JsonProperty("password")))
-    @JsonAlias({ "password", "passwd" })
-    @JsonIgnore
-    @Column(name = "password", nullable = false)
-    public String password;
+    @JsonProperty("credential")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "credential_id", referencedColumnName = "credential_id")
+    public Credential credential;
 
     @JsonCreator
     public User(@JsonProperty("id") Long id, @JsonProperty("firstname") String firstname,
@@ -88,8 +82,7 @@ public class User implements Serializable, Cloneable {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
-        this.email = email;
-        this.password = new BCryptPasswordEncoder().encode(password);
+        this.credential = Credential.builder().email(email).password(password).build();
     }
 
     public String toJSON() {
