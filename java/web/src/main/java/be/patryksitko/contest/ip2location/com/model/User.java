@@ -55,7 +55,7 @@ public class User implements Serializable, Cloneable {
     @Id
     @NonNull
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id", nullable = false, unique = true)
     private Long id;
 
     @NonNull
