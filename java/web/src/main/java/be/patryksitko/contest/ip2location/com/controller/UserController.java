@@ -35,13 +35,11 @@ public class UserController {
             userService.registerUser(user);
         } catch (UserExistsException uex) {
             log.error(uex.getMessage());
-            user.setPassword("hidden");
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(ResponseBuilder.builder().status(HttpStatus.CONFLICT).errors(List.of(uex.getMessage()))
                             .type(ResponseType.ERROR).body(user.toJSON())
                             .build());
         }
-        user.setPassword("hidden");
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseBuilder.builder().status(HttpStatus.CREATED)
                 .type(ResponseType.SUCCESS).body(user.toJSON()).build());
 

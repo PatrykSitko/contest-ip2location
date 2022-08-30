@@ -77,6 +77,7 @@ public class User implements Serializable, Cloneable {
     @Getter(onMethod = @__(@JsonIgnore))
     @Setter(onMethod = @__(@JsonProperty("password")))
     @JsonAlias({ "password", "passwd" })
+    @JsonIgnore
     @Column(name = "password", nullable = false)
     public String password;
 
