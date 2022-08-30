@@ -15,8 +15,8 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public User registerUser(User user) throws UserExistsException, IllegalArgumentException {
-        if (userRepository.findByEmail(user.getEmail()) != null) {
-            throw new UserExistsException(user.getEmail());
+        if (userRepository.findByEmail(user.getCredential().getEmail()) != null) {
+            throw new UserExistsException(user.getCredential().getEmail());
         }
         return userRepository.save(user);
     }
