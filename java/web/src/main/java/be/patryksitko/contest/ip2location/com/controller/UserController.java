@@ -2,6 +2,7 @@ package be.patryksitko.contest.ip2location.com.controller;
 
 import java.util.List;
 
+import javax.security.auth.login.CredentialException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import be.patryksitko.contest.ip2location.com.builders.ResponseBuilder;
 import be.patryksitko.contest.ip2location.com.builders.ResponseBuilder.ResponseType;
 import be.patryksitko.contest.ip2location.com.model.User;
+import be.patryksitko.contest.ip2location.com.service.CredentialService;
 import be.patryksitko.contest.ip2location.com.service.UserService;
-import be.patryksitko.contest.ip2location.com.service.exception.UserExistsException;
+import be.patryksitko.contest.ip2location.com.service.exception.EmailRegisteredException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -28,15 +30,19 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private CredentialService credentialService;
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<Object> registerUser(@RequestBody @Valid User user) {
+        System.out.println(user.toJSON());
         try {
+            credentialService.saveCredential(user.getCredential());
             userService.registerUser(user);
-        } catch (UserExistsException uex) {
-            log.error(uex.getMessage());
+        } catch (EmailRegisteredException | CredentialException ere) {
+            log.error(ere.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(ResponseBuilder.builder().status(HttpStatus.CONFLICT).errors(List.of(uex.getMessage()))
+                    .body(ResponseBuilder.builder().status(HttpStatus.CONFLICT).errors(List.of(ere.getMessage()))
                             .type(ResponseType.ERROR).body(user.toJSON())
                             .build());
         }
