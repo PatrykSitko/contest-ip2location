@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import be.patryksitko.contest.ip2location.com.model.User;
 import be.patryksitko.contest.ip2location.com.repositoryDAO.UserRepository;
 import be.patryksitko.contest.ip2location.com.service.UserService;
-import be.patryksitko.contest.ip2location.com.service.exception.UserExistsException;
+import be.patryksitko.contest.ip2location.com.service.exception.EmailRegisteredException;
 
 @Service
 public class UserServiceImplementation implements UserService {
@@ -14,9 +14,9 @@ public class UserServiceImplementation implements UserService {
     private UserRepository userRepository;
 
     @Override
-    public User registerUser(User user) throws UserExistsException, IllegalArgumentException {
+    public User registerUser(User user) throws EmailRegisteredException, IllegalArgumentException {
         if (userRepository.findByEmail(user.getCredential().getEmail()) != null) {
-            throw new UserExistsException(user.getCredential().getEmail());
+            throw new EmailRegisteredException(user.getCredential().getEmail());
         }
         return userRepository.save(user);
     }
