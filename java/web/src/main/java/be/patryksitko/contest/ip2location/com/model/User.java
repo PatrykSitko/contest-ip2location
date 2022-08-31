@@ -3,7 +3,9 @@ package be.patryksitko.contest.ip2location.com.model;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -52,7 +54,6 @@ public class User implements Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @NonNull
     @JsonProperty("id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, unique = true)
@@ -71,18 +72,8 @@ public class User implements Serializable, Cloneable {
     @NonNull
     @JsonProperty("credential")
     @OneToOne
-    @JoinColumn(nullable = false, name = "credential_id", referencedColumnName = "id")
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "credential_id", value = ConstraintMode.CONSTRAINT), referencedColumnName = "id")
     public Credential credential;
-
-    @JsonCreator
-    public User(@JsonProperty("id") Long id, @JsonProperty("firstname") String firstname,
-            @JsonProperty("lastname") String lastname,
-            @JsonProperty("email") String email, @JsonProperty("password") String password) {
-        this.id = id;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.credential = Credential.builder().email(email).password(password).build();
-    }
 
     public String toJSON() {
         final ObjectMapper objectMapper = new ObjectMapper();
