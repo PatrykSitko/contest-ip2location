@@ -10,8 +10,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -61,8 +61,13 @@ public class Credential implements Serializable, Cloneable {
     @NonNull
     @JsonProperty("id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "credential_id", nullable = false, unique = true)
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
+
+    @NonNull
+    @JsonProperty("user")
+    @OneToOne(mappedBy = "credential")
+    private User user;
 
     @NonNull
     @JsonProperty("email")
@@ -78,17 +83,17 @@ public class Credential implements Serializable, Cloneable {
     public String password;
 
     @NonNull
-    @JsonProperty("authenticationTokens")
-    @OneToMany(fetch = FetchType.LAZY)
     @Builder.Default
-    @JoinColumn(name = "authentication_token_id", nullable = false)
+    @JsonProperty("authenticationTokens")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "credential")
     private List<AuthenticationToken> authenticationTokens = new ArrayList<>();
 
     @JsonCreator
-    public Credential(@JsonProperty("id") Long id,
+    public Credential(@JsonProperty("id") Long id, @JsonProperty("user") User user,
             @JsonProperty("email") String email, @JsonProperty("password") String password,
             @JsonProperty("authenticationTokens") List<AuthenticationToken> authenticationTokens) {
         this.id = id;
+        this.user = user;
         this.email = email;
         this.password = new BCryptPasswordEncoder().encode(password);
         this.authenticationTokens.addAll(authenticationTokens);

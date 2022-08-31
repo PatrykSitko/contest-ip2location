@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -56,8 +58,14 @@ public class AuthenticationToken implements Serializable, Cloneable {
     @Id
     @NonNull
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "authentication_token_id", nullable = false, unique = true)
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
+
+    @NonNull
+    @ManyToOne
+    @JsonProperty("credential")
+    @JoinColumn(name = "credential_id", nullable = false, referencedColumnName = "id")
+    private Credential credential;
 
     @NonNull
     @JsonProperty("fingerpint")

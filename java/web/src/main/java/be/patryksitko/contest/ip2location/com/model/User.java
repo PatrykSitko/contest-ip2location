@@ -4,12 +4,11 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -56,7 +55,7 @@ public class User implements Serializable, Cloneable {
     @NonNull
     @JsonProperty("id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user_id", nullable = false, unique = true)
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
     @NonNull
@@ -71,8 +70,8 @@ public class User implements Serializable, Cloneable {
 
     @NonNull
     @JsonProperty("credential")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "credential_id", referencedColumnName = "credential_id")
+    @OneToOne
+    @JoinColumn(nullable = false, name = "credential_id", referencedColumnName = "id")
     public Credential credential;
 
     @JsonCreator
