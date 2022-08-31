@@ -3,7 +3,9 @@ package be.patryksitko.contest.ip2location.com.model;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -64,7 +66,7 @@ public class AuthenticationToken implements Serializable, Cloneable {
     @NonNull
     @ManyToOne
     @JsonProperty("credential")
-    @JoinColumn(name = "credential_id", nullable = false, referencedColumnName = "id")
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "credential_id", value = ConstraintMode.CONSTRAINT), referencedColumnName = "id")
     private Credential credential;
 
     @NonNull
