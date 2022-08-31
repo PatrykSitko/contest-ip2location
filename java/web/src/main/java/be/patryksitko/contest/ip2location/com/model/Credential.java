@@ -1,7 +1,6 @@
 package be.patryksitko.contest.ip2location.com.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -46,7 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 // @AllArgsConstructor(onConstructor = @__(@JsonCreator), access =
 // AccessLevel.PUBLIC)
 @JsonRootName(value = "credeial", namespace = "credentials")
-@JsonIgnoreProperties({ "id" })
+@JsonIgnoreProperties({ "id", "user", "authenticationTokens" })
 @JsonPropertyOrder({ "email", "authenticationTokens" })
 @Entity
 @Table(name = "credentials")
@@ -83,10 +82,9 @@ public class Credential implements Serializable, Cloneable {
     public String password;
 
     @NonNull
-    @Builder.Default
     @JsonProperty("authenticationTokens")
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "credential")
-    private List<AuthenticationToken> authenticationTokens = new ArrayList<>();
+    private List<AuthenticationToken> authenticationTokens;
 
     @JsonCreator
     public Credential(@JsonProperty("id") Long id, @JsonProperty("user") User user,
@@ -96,7 +94,7 @@ public class Credential implements Serializable, Cloneable {
         this.user = user;
         this.email = email;
         this.password = new BCryptPasswordEncoder().encode(password);
-        this.authenticationTokens.addAll(authenticationTokens);
+        this.authenticationTokens = authenticationTokens;
     }
 
     public String toJSON() {
