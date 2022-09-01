@@ -1,12 +1,9 @@
 {
   "state": {
+    "fingerprint": null,
     "window": {
       "inner": null,
       "outer": null
-    },
-    "authentication": {
-      "fingerprint": null,
-      "token": null
     },
     "updateTick": 0
   },
