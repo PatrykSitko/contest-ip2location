@@ -1,6 +1,16 @@
 {
   "state": {
     "fingerprint": null,
+    "form": {
+      "login": { "email": "", "password": "" },
+      "register": {
+        "firstname": "",
+        "lastname": "",
+        "email": "",
+        "password": "",
+        "repassword": ""
+      }
+    },
     "cookie": {
       "CSRF-TOKEN": null
     },
