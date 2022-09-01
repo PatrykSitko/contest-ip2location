@@ -1,6 +1,9 @@
 {
   "state": {
     "fingerprint": null,
+    "cookie": {
+      "CSRF-TOKEN": null
+    },
     "window": {
       "inner": null,
       "outer": null

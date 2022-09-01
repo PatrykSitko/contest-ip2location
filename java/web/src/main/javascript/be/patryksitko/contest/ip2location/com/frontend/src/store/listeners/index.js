@@ -1,17 +1,19 @@
+import bindCookiesListener from "./listener/cookies";
+import bindFingerprintListener from "./listener/fingerprint";
 import bindHistoryListener from "./listener/history";
-import bindWindowListeners from "./listener/window";
 import bindUpdateTickListener from "./listener/updateTick";
-import bindAuthenticationFingerprintListener from "./listener/authentication/fingerprint";
-import bindAuthenticationTokenListener from "./listener/authentication/token";
+import bindWindowListeners from "./listener/window";
 
 const loop = setInterval;
 
-export default (store) => {
+const storeListeners = (store) => {
   bindHistoryListener(store);
   bindWindowListeners(store);
-  bindAuthenticationFingerprintListener(store);
+  bindFingerprintListener(store);
   loop(() => {
     bindUpdateTickListener(store);
-    bindAuthenticationTokenListener(store);
+    bindCookiesListener(store);
   }, 100);
 };
+
+export default storeListeners;
