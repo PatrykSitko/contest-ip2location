@@ -1,5 +1,5 @@
 //update tick
-import { STORE_COOKIES } from "./types";
+import { STORE_COOKIES } from "../types";
 
 const windowCookies = (cookies = {}) => ({
   type: STORE_COOKIES,
