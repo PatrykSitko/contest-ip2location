@@ -7,4 +7,6 @@ import be.patryksitko.contest.ip2location.com.model.Credential;
 
 @Repository
 public interface CredentialRepository extends CrudRepository<Credential, Long> {
+
+    Credential findByEmail(String email);
 }
