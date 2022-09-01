@@ -8,6 +8,6 @@ import be.patryksitko.contest.ip2location.com.model.User;
 
 @Repository
 public interface UserRepository extends CrudRepository<User, Long> {
-    @Query("SELECT c FROM User u INNER JOIN u.credential c")
+    @Query("SELECT u FROM User AS u INNER JOIN u.credential AS c")
     User findByEmail(String email);
 }
