@@ -4,6 +4,7 @@ import React from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import { goBack } from "redux-first-routing";
 import * as Yup from "yup";
 import "./register.scss";
@@ -37,6 +38,23 @@ const mapStateToProps = ({
 const mapDispatchToProps = (dispatch) => ({
   goBack: (path) => dispatch(goBack(path)),
 });
+
+const ReturnToLoginQuestion = ({ formik }) => (
+  <div
+    hidden={
+      !formik.errors.email?.includes(
+        `The email "${formik.values.email}" is already registered.`
+      )
+    }
+    className="action-suggestion"
+  >
+    Do you want to return to the{" "}
+    <Link className="return-to-login-page" to="/login">
+      login
+    </Link>{" "}
+    page?
+  </div>
+);
 
 function LoginForm({ goBack, csrfToken }) {
   const formik = useFormik({
@@ -133,6 +151,7 @@ function LoginForm({ goBack, csrfToken }) {
 
         <Form.Group className="mb-3" controlId="formEmail">
           <Form.Label className="email">Email address</Form.Label>
+          <ReturnToLoginQuestion {...{ formik }} />
           <Form.Control
             disabled={formik.isSubmitting}
             name="email"
