@@ -1,6 +1,8 @@
 import { startListener } from "redux-first-routing";
 import { browserHistory } from "../../configuration";
 
-export default store => {
+const historyListener = (store) => {
   startListener(browserHistory, store);
 };
+
+export default historyListener;

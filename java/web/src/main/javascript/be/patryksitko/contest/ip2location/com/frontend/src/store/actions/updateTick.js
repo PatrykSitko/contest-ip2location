@@ -1,9 +1,11 @@
 //update tick
 import { UPDATE_TICK } from "./types";
 
-export default (count) => ({
+const updateTickAction = (count) => ({
   type: UPDATE_TICK,
   payload: {
     updateTick: count,
   },
 });
+
+export default updateTickAction;

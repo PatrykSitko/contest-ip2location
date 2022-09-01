@@ -1,8 +1,10 @@
-import windowResized from '../../actions/window/resized';
+import windowResized from "../../actions/window/resized";
 
-export default store => {
+const windowListener = (store) => {
   trackWindowSizeState(store);
 };
+
+export default windowListener;
 
 function trackWindowSizeState(store) {
   store.dispatch(
@@ -12,7 +14,7 @@ function trackWindowSizeState(store) {
       { width: window.outerWidth, height: window.outerHeight }
     )
   );
-  window.addEventListener('resize', event => {
+  window.addEventListener("resize", (event) => {
     store.dispatch(
       windowResized(
         store.getState().state,

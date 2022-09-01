@@ -1,6 +1,6 @@
 import updateTick from "../../actions/updateTick";
 
-export default ({ getState, dispatch }) => {
+const updateTickListener = ({ getState, dispatch }) => {
   const {
     state: { updateTick: updateTickCount },
   } = getState();
@@ -10,3 +10,5 @@ export default ({ getState, dispatch }) => {
     dispatch(updateTick(updateTickCount + 1));
   }
 };
+
+export default updateTickListener;
