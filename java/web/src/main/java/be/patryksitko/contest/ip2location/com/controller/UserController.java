@@ -38,11 +38,11 @@ public class UserController {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(ResponseBuilder.builder().status(HttpStatus.CONFLICT).errors(List.of(e.getMessage()))
-                            .type(ResponseType.ERROR).body(user.toJSON())
+                            .responseType(ResponseType.ERROR).body(user.toJSON())
                             .build());
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseBuilder.builder().status(HttpStatus.CREATED)
-                .type(ResponseType.SUCCESS).body(user.toJSON()).build());
+                .responseType(ResponseType.SUCCESS).body(user.toJSON()).build());
 
     }
 }

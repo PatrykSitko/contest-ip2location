@@ -14,7 +14,7 @@ import lombok.Data;
 public class ResponseBuilder {
 
     private HttpStatus status;
-    private ResponseType type;
+    private ResponseType responseType;
     private List<String> errors;
     private String body;
 
