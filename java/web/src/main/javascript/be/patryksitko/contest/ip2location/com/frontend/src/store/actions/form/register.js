@@ -9,6 +9,7 @@ const registerFormAction = (
     email: "",
     password: "",
     repassword: "",
+    errors: {},
   }
 ) => ({
   type: STORE_FORM_REGISTER,

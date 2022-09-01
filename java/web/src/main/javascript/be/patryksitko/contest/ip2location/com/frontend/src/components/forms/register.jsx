@@ -35,22 +35,27 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(setRegisterFormValues(currentState, registerFormValues)),
 });
 
-const ReturnToLoginQuestion = ({ formik }) => (
-  <div
-    hidden={
-      !formik.errors.email?.includes(
-        `The email "${formik.values.email}" is already registered.`
-      )
-    }
-    className="action-suggestion"
-  >
-    Do you want to return to the{" "}
-    <Link className="return-to-login-page" to="/login">
-      login
-    </Link>{" "}
-    page?
-  </div>
-);
+const ReturnToLoginQuestion = ({ formik, initialErrors }) => {
+  const formikErrorsIncludeRequiredErrorToShow = formik.errors.email?.includes(
+    `The email "${formik.values.email}" is already registered.`
+  );
+  const formikIsNotDirtyButErrorPersisted =
+    !formik.dirty &&
+    initialErrors.email?.includes(
+      `The email "${formik.values.email}" is already registered.`
+    );
+  const show =
+    formikErrorsIncludeRequiredErrorToShow || formikIsNotDirtyButErrorPersisted;
+  return (
+    <div hidden={!show} className="action-suggestion">
+      Do you want to return to the{" "}
+      <Link className="return-to-login-page" to="/login">
+        login
+      </Link>{" "}
+      page?
+    </div>
+  );
+};
 
 function LoginForm({
   goBack,
@@ -59,49 +64,69 @@ function LoginForm({
   registerValues,
   updateRegisterFormValues,
 }) {
-  const [initialValues] = useState(registerValues);
+  const [initialValues] = useState({
+    firstname: registerValues.firstname,
+    lastname: registerValues.lastname,
+    email: registerValues.email,
+    password: registerValues.password,
+    repassword: registerValues.repassword,
+  });
+  const [initialErrors] = useState(registerValues.errors);
   const formik = useFormik({
     validationSchema,
     initialValues,
+    initialErrors,
     onSubmit: async (
       { firstname, lastname, email, password },
       { setSubmitting, setErrors }
     ) => {
-      const result = await fetch("/api/user/register", {
-        headers: {
-          "CSRF-TOKEN": csrfToken,
-          "Content-Type": "Application/json",
-        },
-        credentials: "include",
-        method: "POST",
-        body: JSON.stringify({
-          firstname,
-          lastname,
-          credential: { email, password },
-        }),
-      });
-      const { status, responseType, errors } = await result.json();
-      if (httpStatus[status] === httpStatus.CONFLICT) {
-        if (responseType === "ERROR") {
-          errors.forEach((error) => {
-            const startOfErrorMessage = error.indexOf(":") + 1;
-            const errorMessage = error.substring(
-              startOfErrorMessage,
-              error.length
-            );
-            switch (error.substring(0, startOfErrorMessage)) {
-              default:
-                break;
-              case "[EMAIL]:":
-                setErrors({
-                  email: errorMessage,
-                });
-                break;
-            }
-          });
+      try {
+        const result = await fetch("/api/user/register", {
+          headers: {
+            "CSRF-TOKEN": csrfToken,
+            "Content-Type": "Application/json",
+          },
+          credentials: "include",
+          method: "POST",
+          body: JSON.stringify({
+            firstname,
+            lastname,
+            credential: { email, password },
+          }),
+        });
+        const { status, responseType, errors } = await result.json();
+        if (httpStatus[status] === httpStatus.CONFLICT) {
+          if (responseType === "ERROR") {
+            const parsedErrors = {};
+            errors.forEach((error) => {
+              const startOfErrorMessage = error.indexOf(":") + 1;
+              const errorMessage = error.substring(
+                startOfErrorMessage,
+                error.length
+              );
+              switch (error.substring(0, startOfErrorMessage)) {
+                default:
+                  break;
+                case "[EMAIL]:":
+                  parsedErrors.email = errorMessage;
+                  break;
+              }
+            });
+            setErrors(parsedErrors);
+            updateRegisterFormValues(currentState, {
+              firstname: registerValues.firstname,
+              lastname: registerValues.lastname,
+              email: registerValues.email,
+              password: registerValues.password,
+              repassword: registerValues.repassword,
+              errors: { ...registerValues.errors, ...parsedErrors },
+            });
+          }
         }
+      } catch (e) {
+      } finally {
+        setSubmitting(false);
       }
-      setSubmitting(false);
     },
   });
   return (
@@ -125,6 +150,7 @@ function LoginForm({
                 email: registerValues.email,
                 password: registerValues.password,
                 repassword: registerValues.repassword,
+                errors: registerValues.errors,
               });
               formik.handleChange(event);
             }}
@@ -156,6 +182,7 @@ function LoginForm({
                 email: registerValues.email,
                 password: registerValues.password,
                 repassword: registerValues.repassword,
+                errors: registerValues.errors,
               });
               formik.handleChange(event);
             }}
@@ -172,7 +199,7 @@ function LoginForm({
 
         <Form.Group className="mb-3" controlId="formEmail">
           <Form.Label className="email">Email address</Form.Label>
-          <ReturnToLoginQuestion {...{ formik }} />
+          <ReturnToLoginQuestion {...{ formik, initialErrors }} />
           <Form.Control
             disabled={formik.isSubmitting}
             name="email"
@@ -185,17 +212,31 @@ function LoginForm({
                 email: event.target.value,
                 password: registerValues.password,
                 repassword: registerValues.repassword,
+                errors: registerValues.errors,
               });
               formik.handleChange(event);
             }}
             onBlur={formik.handleBlur}
             value={formik.values.email}
-            isValid={!formik.errors.email && formik.values.email !== ""}
-            isInvalid={formik.touched.email && formik.errors.email}
-            feedback={formik.errors.email}
+            isValid={
+              (formik.dirty && !initialErrors.email) ||
+              (!formik.errors.email && formik.values.email !== "")
+            }
+            isInvalid={
+              (!formik.dirty && initialErrors.email) ||
+              ((formik.touched.email || initialErrors.email) &&
+                formik.errors.email)
+            }
+            feedback={
+              !formik.dirty && initialErrors.email
+                ? initialErrors.email
+                : formik.errors.email
+            }
           />
           <Form.Control.Feedback type="invalid">
-            {formik.errors.email}
+            {!formik.dirty && initialErrors.email
+              ? initialErrors.email
+              : formik.errors.email}
           </Form.Control.Feedback>
         </Form.Group>
 
@@ -219,6 +260,7 @@ function LoginForm({
                 email: registerValues.email,
                 password: event.target.value,
                 repassword: registerValues.repassword,
+                errors: registerValues.errors,
               });
               formik.handleChange(event);
             }}
@@ -247,6 +289,7 @@ function LoginForm({
                 email: registerValues.email,
                 password: registerValues.password,
                 repassword: event.target.value,
+                errors: registerValues.errors,
               });
               formik.handleChange(event);
             }}
