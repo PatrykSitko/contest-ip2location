@@ -1,12 +1,13 @@
 import { useFormik } from "formik";
 import httpStatus from "http-status";
-import React from "react";
+import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { goBack } from "redux-first-routing";
 import * as Yup from "yup";
+import setRegisterFormValues from "../../store/actions/form/register";
 import "./register.scss";
 
 const validationSchema = Yup.object({
@@ -22,21 +23,16 @@ const validationSchema = Yup.object({
     .required("Retyping password is required.")
     .oneOf([Yup.ref("password"), null], "Passwords don't match!"),
 });
-const initialValues = {
-  firstname: "",
-  lastname: "",
-  email: "",
-  password: "",
-  repassword: "",
-};
-const mapStateToProps = ({
-  state: {
-    cookie: { "CSRF-TOKEN": csrfToken },
-  },
-}) => ({ csrfToken });
+const mapStateToProps = ({ state }) => ({
+  currentState: state,
+  csrfToken: state.csrfToken,
+  registerValues: state.form.register,
+});
 
 const mapDispatchToProps = (dispatch) => ({
   goBack: (path) => dispatch(goBack(path)),
+  updateRegisterFormValues: (currentState, registerFormValues) =>
+    dispatch(setRegisterFormValues(currentState, registerFormValues)),
 });
 
 const ReturnToLoginQuestion = ({ formik }) => (
@@ -56,7 +52,14 @@ const ReturnToLoginQuestion = ({ formik }) => (
   </div>
 );
 
-function LoginForm({ goBack, csrfToken }) {
+function LoginForm({
+  goBack,
+  currentState,
+  csrfToken,
+  registerValues,
+  updateRegisterFormValues,
+}) {
+  const [initialValues] = useState(registerValues);
   const formik = useFormik({
     validationSchema,
     initialValues,
@@ -115,7 +118,16 @@ function LoginForm({ goBack, csrfToken }) {
             className="given-names"
             type="text"
             placeholder="Enter first name"
-            onChange={formik.handleChange}
+            onChange={(event) => {
+              updateRegisterFormValues(currentState, {
+                firstname: event.target.value,
+                lastname: registerValues.lastname,
+                email: registerValues.email,
+                password: registerValues.password,
+                repassword: registerValues.repassword,
+              });
+              formik.handleChange(event);
+            }}
             onBlur={formik.handleBlur}
             value={formik.values.firstname}
             isValid={!formik.errors.firstname && formik.values.firstname !== ""}
@@ -137,7 +149,16 @@ function LoginForm({ goBack, csrfToken }) {
             className="given-names"
             type="text"
             placeholder="Enter last name"
-            onChange={formik.handleChange}
+            onChange={(event) => {
+              updateRegisterFormValues(currentState, {
+                firstname: registerValues.firstname,
+                lastname: event.target.value,
+                email: registerValues.email,
+                password: registerValues.password,
+                repassword: registerValues.repassword,
+              });
+              formik.handleChange(event);
+            }}
             onBlur={formik.handleBlur}
             value={formik.values.lastname}
             isValid={!formik.errors.lastname && formik.values.lastname !== ""}
@@ -157,7 +178,16 @@ function LoginForm({ goBack, csrfToken }) {
             name="email"
             type="email"
             placeholder="Enter email"
-            onChange={formik.handleChange}
+            onChange={(event) => {
+              updateRegisterFormValues(currentState, {
+                firstname: registerValues.firstname,
+                lastname: registerValues.lastname,
+                email: event.target.value,
+                password: registerValues.password,
+                repassword: registerValues.repassword,
+              });
+              formik.handleChange(event);
+            }}
             onBlur={formik.handleBlur}
             value={formik.values.email}
             isValid={!formik.errors.email && formik.values.email !== ""}
@@ -182,7 +212,16 @@ function LoginForm({ goBack, csrfToken }) {
             name="password"
             type="password"
             placeholder="Password"
-            onChange={formik.handleChange}
+            onChange={(event) => {
+              updateRegisterFormValues(currentState, {
+                firstname: registerValues.firstname,
+                lastname: registerValues.lastname,
+                email: registerValues.email,
+                password: event.target.value,
+                repassword: registerValues.repassword,
+              });
+              formik.handleChange(event);
+            }}
             onBlur={formik.handleBlur}
             value={formik.values.password}
             isValid={!formik.errors.password && formik.values.password !== ""}
@@ -201,7 +240,16 @@ function LoginForm({ goBack, csrfToken }) {
             name="repassword"
             type="password"
             placeholder="Retype Password"
-            onChange={formik.handleChange}
+            onChange={(event) => {
+              updateRegisterFormValues(currentState, {
+                firstname: registerValues.firstname,
+                lastname: registerValues.lastname,
+                email: registerValues.email,
+                password: registerValues.password,
+                repassword: event.target.value,
+              });
+              formik.handleChange(event);
+            }}
             onBlur={formik.handleBlur}
             value={formik.values.repassword}
             isValid={
