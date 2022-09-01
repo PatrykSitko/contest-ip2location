@@ -1,4 +1,5 @@
 import { useFormik } from "formik";
+import httpStatus from "http-status";
 import React from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -27,17 +28,58 @@ const initialValues = {
   password: "",
   repassword: "",
 };
+const mapStateToProps = ({
+  state: {
+    cookie: { "CSRF-TOKEN": csrfToken },
+  },
+}) => ({ csrfToken });
 
 const mapDispatchToProps = (dispatch) => ({
   goBack: (path) => dispatch(goBack(path)),
 });
 
-function LoginForm({ goBack }) {
+function LoginForm({ goBack, csrfToken }) {
   const formik = useFormik({
     validationSchema,
     initialValues,
-    onSubmit: (values, { setSubmitting }) => {
-      alert(JSON.stringify(values, null, 2));
+    onSubmit: async (
+      { firstname, lastname, email, password },
+      { setSubmitting, setErrors }
+    ) => {
+      const result = await fetch("/api/user/register", {
+        headers: {
+          "CSRF-TOKEN": csrfToken,
+          "Content-Type": "Application/json",
+        },
+        credentials: "include",
+        method: "POST",
+        body: JSON.stringify({
+          firstname,
+          lastname,
+          credential: { email, password },
+        }),
+      });
+      const { status, responseType, errors } = await result.json();
+      if (httpStatus[status] === httpStatus.CONFLICT) {
+        if (responseType === "ERROR") {
+          errors.forEach((error) => {
+            const startOfErrorMessage = error.indexOf(":") + 1;
+            const errorMessage = error.substring(
+              startOfErrorMessage,
+              error.length
+            );
+            switch (error.substring(0, startOfErrorMessage)) {
+              default:
+                break;
+              case "[EMAIL]:":
+                setErrors({
+                  email: errorMessage,
+                });
+                break;
+            }
+          });
+        }
+      }
       setSubmitting(false);
     },
   });
@@ -164,4 +206,4 @@ function LoginForm({ goBack }) {
   );
 }
 
-export default connect(null, mapDispatchToProps)(LoginForm);
+export default connect(mapStateToProps, mapDispatchToProps)(LoginForm);
