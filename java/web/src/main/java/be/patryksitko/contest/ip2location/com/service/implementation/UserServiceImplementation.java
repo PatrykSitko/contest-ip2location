@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import be.patryksitko.contest.ip2location.com.helpers.BCryptPasswordEncoder;
 import be.patryksitko.contest.ip2location.com.model.User;
-import be.patryksitko.contest.ip2location.com.repositoryDAO.CredentialRepository;
+import be.patryksitko.contest.ip2location.com.repositoryDAO.AuthenticationTokenRepository;
 import be.patryksitko.contest.ip2location.com.repositoryDAO.UserRepository;
 import be.patryksitko.contest.ip2location.com.service.UserService;
 import be.patryksitko.contest.ip2location.com.service.exception.EmailRegisteredException;
@@ -15,8 +15,9 @@ import be.patryksitko.contest.ip2location.com.service.exception.EmailUnregistere
 public class UserServiceImplementation implements UserService {
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
-    private CredentialRepository credentialRepository;
+    private AuthenticationTokenRepository authenticationTokenRepository;
 
     @Override
     public User registerUser(User user) throws EmailRegisteredException, IllegalArgumentException {
@@ -24,7 +25,6 @@ public class UserServiceImplementation implements UserService {
             throw new EmailRegisteredException(user.getCredential().getEmail());
         }
         user.getCredential().setPassword(BCryptPasswordEncoder.getInstance.encode(user.getCredential().getPassword()));
-        credentialRepository.save(user.getCredential());
         return userRepository.save(user);
     }
 

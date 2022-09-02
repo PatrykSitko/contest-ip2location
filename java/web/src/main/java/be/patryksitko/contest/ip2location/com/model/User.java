@@ -2,6 +2,7 @@ package be.patryksitko.contest.ip2location.com.model;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
@@ -71,7 +72,7 @@ public class User implements Serializable, Cloneable {
 
     @NonNull
     @JsonProperty("credential")
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "credential_id", value = ConstraintMode.CONSTRAINT), referencedColumnName = "id")
     public Credential credential;
 
