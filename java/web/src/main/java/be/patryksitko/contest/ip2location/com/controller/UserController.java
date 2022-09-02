@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import be.patryksitko.contest.ip2location.com.builders.ResponseBuilder;
 import be.patryksitko.contest.ip2location.com.builders.ResponseBuilder.ResponseType;
+import be.patryksitko.contest.ip2location.com.helpers.BCryptPasswordEncoder;
+import be.patryksitko.contest.ip2location.com.helpers.exception.PasswordFormatException;
 import be.patryksitko.contest.ip2location.com.model.User;
 import be.patryksitko.contest.ip2location.com.service.UserService;
 import be.patryksitko.contest.ip2location.com.service.exception.EmailRegisteredException;
@@ -31,10 +33,11 @@ public class UserController {
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<Object> registerUser(@RequestBody @Valid User user) {
-        System.out.println(user.toJSON());
         try {
-            userService.registerUser(user);
-        } catch (EmailRegisteredException e) {
+            if (BCryptPasswordEncoder.isPasswordMeetingStandards(user.getCredential().getPassword())) {
+                userService.registerUser(user);
+            }
+        } catch (EmailRegisteredException | PasswordFormatException e) {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(ResponseBuilder.builder().status(HttpStatus.CONFLICT).errors(List.of(e.getMessage()))
