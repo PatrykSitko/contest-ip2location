@@ -62,6 +62,7 @@ public class Credential implements Serializable, Cloneable {
     private Long id;
 
     @JsonProperty("user")
+    @ToString.Exclude
     @OneToOne(mappedBy = "credential")
     private User user;
 

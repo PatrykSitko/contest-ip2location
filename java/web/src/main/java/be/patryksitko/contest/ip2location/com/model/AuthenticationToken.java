@@ -42,8 +42,8 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor(onConstructor = @__(@JsonCreator), access = AccessLevel.PUBLIC)
 @JsonRootName(value = "authenticationToken", namespace = "authenticationTokens")
-@JsonIgnoreProperties({ "id" })
-@JsonPropertyOrder({ "fingerprint", "authenticationToken", "deviceType" })
+@JsonIgnoreProperties({ "id", "credential" })
+@JsonPropertyOrder({ "fingerprint", "authenticationToken" })
 @Entity
 @Table(name = "authentication_tokens")
 public class AuthenticationToken implements Serializable, Cloneable {
@@ -52,24 +52,23 @@ public class AuthenticationToken implements Serializable, Cloneable {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private static final long serialVersionUID = 1L;
+
     @Id
-    @NonNull
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
-    @NonNull
     @ManyToOne
     @JsonProperty("credential")
+    @ToString.Exclude
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "credential_id", value = ConstraintMode.CONSTRAINT), referencedColumnName = "id")
     private Credential credential;
 
     @NonNull
-    @JsonProperty("fingerpint")
+    @JsonProperty("fingerprint")
     @Column(name = "fingerprint", nullable = false)
     private String fingerprint;
 
-    @NonNull
     @JsonProperty("authenticationToken")
     @Column(name = "authentication_token", nullable = false)
     private String authenticationToken;
