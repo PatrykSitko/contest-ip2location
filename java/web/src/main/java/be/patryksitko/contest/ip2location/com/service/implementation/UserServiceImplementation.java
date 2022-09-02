@@ -1,9 +1,15 @@
 package be.patryksitko.contest.ip2location.com.service.implementation;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import be.patryksitko.contest.ip2location.com.helpers.BCryptPasswordEncoder;
+import be.patryksitko.contest.ip2location.com.model.AuthenticationToken;
+import be.patryksitko.contest.ip2location.com.model.Credential;
 import be.patryksitko.contest.ip2location.com.model.User;
 import be.patryksitko.contest.ip2location.com.repositoryDAO.AuthenticationTokenRepository;
 import be.patryksitko.contest.ip2location.com.repositoryDAO.UserRepository;
@@ -13,6 +19,7 @@ import be.patryksitko.contest.ip2location.com.service.exception.EmailUnregistere
 
 @Service
 public class UserServiceImplementation implements UserService {
+
     @Autowired
     private UserRepository userRepository;
 
@@ -35,5 +42,29 @@ public class UserServiceImplementation implements UserService {
             return user;
         }
         throw new EmailUnregisteredException(email);
+    }
+
+    @Override
+    public Optional<AuthenticationToken> authenticateUser(Credential credential) throws EmailUnregisteredException {
+        final User user = this.findUserByEmail(credential.getEmail());
+        final boolean passwordMatches = user instanceof User
+                && user.getCredential().isPasswordMatching(credential.getPassword());
+        if (!passwordMatches) {
+            return Optional.empty();
+        }
+        final String fingerprint = credential.getAuthenticationTokens().get(0).getFingerprint();
+        final List<AuthenticationToken> authenticationTokens = user.getCredential().getAuthenticationTokens();
+        Optional<AuthenticationToken> fingerprintedAuthenticationToken = authenticationTokens.stream()
+                .filter((authenticationToken) -> authenticationToken.getFingerprint()
+                        .equals(fingerprint))
+                .findFirst();
+        if (fingerprintedAuthenticationToken.isPresent()) {
+            return fingerprintedAuthenticationToken;
+        }
+        AuthenticationToken registeredAuthenticationToken = authenticationTokenRepository.save(
+                AuthenticationToken.builder().id(null).credential(user.getCredential()).fingerprint(fingerprint)
+                        .authenticationToken(UUID.randomUUID()).build());
+        System.out.println(registeredAuthenticationToken);
+        return Optional.of(registeredAuthenticationToken);
     }
 }
