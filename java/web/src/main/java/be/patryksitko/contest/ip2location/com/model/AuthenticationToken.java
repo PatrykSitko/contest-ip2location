@@ -1,6 +1,7 @@
 package be.patryksitko.contest.ip2location.com.model;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.ConstraintMode;
@@ -71,7 +72,7 @@ public class AuthenticationToken implements Serializable, Cloneable {
 
     @JsonProperty("authenticationToken")
     @Column(name = "authentication_token", nullable = false)
-    private String authenticationToken;
+    private UUID authenticationToken;
 
     public String toJSON() {
         final ObjectMapper objectMapper = new ObjectMapper();
