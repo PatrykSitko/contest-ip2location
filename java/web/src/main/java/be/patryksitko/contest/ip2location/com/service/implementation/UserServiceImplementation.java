@@ -8,6 +8,7 @@ import be.patryksitko.contest.ip2location.com.repositoryDAO.CredentialRepository
 import be.patryksitko.contest.ip2location.com.repositoryDAO.UserRepository;
 import be.patryksitko.contest.ip2location.com.service.UserService;
 import be.patryksitko.contest.ip2location.com.service.exception.EmailRegisteredException;
+import be.patryksitko.contest.ip2location.com.service.exception.EmailUnregisteredException;
 
 @Service
 public class UserServiceImplementation implements UserService {
@@ -23,5 +24,14 @@ public class UserServiceImplementation implements UserService {
         }
         credentialRepository.save(user.getCredential());
         return userRepository.save(user);
+    }
+
+    @Override
+    public User findUserByEmail(String email) throws EmailUnregisteredException {
+        final User user = userRepository.findByEmail(email);
+        if (user instanceof User) {
+            return user;
+        }
+        throw new EmailUnregisteredException(email);
     }
 }
