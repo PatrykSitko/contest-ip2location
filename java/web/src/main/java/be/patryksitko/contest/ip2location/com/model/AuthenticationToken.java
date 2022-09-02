@@ -66,13 +66,13 @@ public class AuthenticationToken implements Serializable, Cloneable {
 
     @NonNull
     @JsonProperty("fingerpint")
-    @Column(name = "user_fingerprint", nullable = false)
-    private String userFingerprint;
+    @Column(name = "fingerprint", nullable = false)
+    private String fingerprint;
 
     @NonNull
     @JsonProperty("authenticationToken")
-    @Column(name = "user_authentication_token", nullable = false)
-    private String userAuthenticationToken;
+    @Column(name = "authentication_token", nullable = false)
+    private String authenticationToken;
 
     public String toJSON() {
         final ObjectMapper objectMapper = new ObjectMapper();
