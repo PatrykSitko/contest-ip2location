@@ -52,11 +52,6 @@ public class AuthenticationToken implements Serializable, Cloneable {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private static final long serialVersionUID = 1L;
-
-    public static enum DeviceType {
-        IOS_APP, ANDROID_APP, BROWSER_APP_DESKTOP, BROWSER_APP_MOBILE, LINUX_APP, WINDOWS_APP, OTHER;
-    }
-
     @Id
     @NonNull
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -78,11 +73,6 @@ public class AuthenticationToken implements Serializable, Cloneable {
     @JsonProperty("authenticationToken")
     @Column(name = "user_authentication_token", nullable = false)
     private String userAuthenticationToken;
-
-    @NonNull
-    @JsonProperty("deviceType")
-    @Column(name = "device_type", nullable = false)
-    private DeviceType deviceType;
 
     public String toJSON() {
         final ObjectMapper objectMapper = new ObjectMapper();
