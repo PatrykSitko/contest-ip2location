@@ -16,6 +16,7 @@ import be.patryksitko.contest.ip2location.com.repositoryDAO.UserRepository;
 import be.patryksitko.contest.ip2location.com.service.UserService;
 import be.patryksitko.contest.ip2location.com.service.exception.EmailRegisteredException;
 import be.patryksitko.contest.ip2location.com.service.exception.EmailUnregisteredException;
+import be.patryksitko.contest.ip2location.com.service.exception.PasswordMismatchException;
 
 @Service
 public class UserServiceImplementation implements UserService {
@@ -45,12 +46,15 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public Optional<AuthenticationToken> authenticateUser(Credential credential) throws EmailUnregisteredException {
+    public AuthenticationToken authenticateUser(Credential credential)
+            throws EmailUnregisteredException, PasswordMismatchException {
         final User user = this.findUserByEmail(credential.getEmail());
-        final boolean passwordMatches = user instanceof User
-                && user.getCredential().isPasswordMatching(credential.getPassword());
+        if (!(user instanceof User)) {
+            throw new EmailUnregisteredException(credential.getEmail());
+        }
+        final boolean passwordMatches = user.getCredential().isPasswordMatching(credential.getPassword());
         if (!passwordMatches) {
-            return Optional.empty();
+            throw new PasswordMismatchException(credential.getEmail());
         }
         final String fingerprint = credential.getAuthenticationTokens().get(0).getFingerprint();
         final List<AuthenticationToken> authenticationTokens = user.getCredential().getAuthenticationTokens();
@@ -59,12 +63,11 @@ public class UserServiceImplementation implements UserService {
                         .equals(fingerprint))
                 .findFirst();
         if (fingerprintedAuthenticationToken.isPresent()) {
-            return fingerprintedAuthenticationToken;
+            return fingerprintedAuthenticationToken.get();
         }
         AuthenticationToken registeredAuthenticationToken = authenticationTokenRepository.save(
                 AuthenticationToken.builder().id(null).credential(user.getCredential()).fingerprint(fingerprint)
                         .authenticationToken(UUID.randomUUID()).build());
-        System.out.println(registeredAuthenticationToken);
-        return Optional.of(registeredAuthenticationToken);
+        return registeredAuthenticationToken;
     }
 }
