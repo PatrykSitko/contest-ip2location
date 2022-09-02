@@ -56,7 +56,7 @@ public class UserServiceImplementation implements UserService {
         if (!passwordMatches) {
             throw new PasswordMismatchException(credential.getEmail());
         }
-        final String fingerprint = credential.getAuthenticationTokens().get(0).getFingerprint();
+        final String fingerprint = credential.getFingerprint();
         final List<AuthenticationToken> authenticationTokens = user.getCredential().getAuthenticationTokens();
         Optional<AuthenticationToken> fingerprintedAuthenticationToken = authenticationTokens.stream()
                 .filter((authenticationToken) -> authenticationToken.getFingerprint()

@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -44,8 +45,8 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor(onConstructor = @__(@JsonCreator), access = AccessLevel.PUBLIC)
 @JsonRootName(value = "credeial", namespace = "credentials")
-@JsonIgnoreProperties({ "id", "user" })
-@JsonPropertyOrder({ "email", "authenticationTokens" })
+@JsonIgnoreProperties({ "id", "user", "authenticationTokens", "fingerprint" })
+@JsonPropertyOrder({ "email" })
 @Entity
 @Table(name = "credentials")
 public class Credential implements Serializable, Cloneable {
@@ -82,6 +83,9 @@ public class Credential implements Serializable, Cloneable {
     @JsonProperty("authenticationTokens")
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "credential")
     private List<AuthenticationToken> authenticationTokens;
+
+    @Transient
+    private transient String fingerprint;
 
     public boolean isPasswordMatching(String password) {
         return BCryptPasswordEncoder.getInstance.matches(password, this.password);
