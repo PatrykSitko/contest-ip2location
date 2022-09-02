@@ -13,8 +13,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,7 +23,9 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import be.patryksitko.contest.ip2location.com.helpers.BCryptPasswordEncoder;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -42,10 +42,9 @@ import lombok.extern.slf4j.Slf4j;
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = false)
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-// @AllArgsConstructor(onConstructor = @__(@JsonCreator), access =
-// AccessLevel.PUBLIC)
+@AllArgsConstructor(onConstructor = @__(@JsonCreator), access = AccessLevel.PUBLIC)
 @JsonRootName(value = "credeial", namespace = "credentials")
-@JsonIgnoreProperties({ "id", "user", "authenticationTokens" })
+@JsonIgnoreProperties({ "id", "user" })
 @JsonPropertyOrder({ "email", "authenticationTokens" })
 @Entity
 @Table(name = "credentials")
@@ -57,7 +56,6 @@ public class Credential implements Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @NonNull
     @JsonProperty("id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, unique = true)
@@ -86,15 +84,8 @@ public class Credential implements Serializable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "credential")
     private List<AuthenticationToken> authenticationTokens;
 
-    @JsonCreator
-    public Credential(@JsonProperty("id") Long id, @JsonProperty("user") User user,
-            @JsonProperty("email") String email, @JsonProperty("password") String password,
-            @JsonProperty("authenticationTokens") List<AuthenticationToken> authenticationTokens) {
-        this.id = id;
-        this.user = user;
-        this.email = email;
-        this.password = new BCryptPasswordEncoder().encode(password);
-        this.authenticationTokens = authenticationTokens;
+    public boolean isPasswordMatching(String password) {
+        return BCryptPasswordEncoder.getInstance.matches(password, this.password);
     }
 
     public String toJSON() {
