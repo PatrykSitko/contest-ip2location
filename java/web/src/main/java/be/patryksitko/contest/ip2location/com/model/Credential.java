@@ -61,7 +61,6 @@ public class Credential implements Serializable, Cloneable {
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
-    @NonNull
     @JsonProperty("user")
     @OneToOne(mappedBy = "credential")
     private User user;
