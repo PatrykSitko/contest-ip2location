@@ -78,7 +78,6 @@ public class Credential implements Serializable, Cloneable {
     @Column(name = "password", nullable = false)
     public String password;
 
-    @NonNull
     @JsonProperty("authenticationTokens")
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "credential")
     private List<AuthenticationToken> authenticationTokens;
