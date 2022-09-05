@@ -13,4 +13,6 @@ public interface AuthenticationTokenRepository extends CrudRepository<Authentica
 
     @Query("SELECT authToken FROM AuthenticationToken AS authToken INNER JOIN authToken.credential AS credential WHERE credential.email = ?1")
     List<AuthenticationToken> findByEmail(String email);
+
+    List<AuthenticationToken> findByFingerprint(String fingerprint);
 }
