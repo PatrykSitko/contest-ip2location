@@ -112,7 +112,8 @@ function LoginForm({
                 startOfErrorMessage,
                 error.length
               );
-              switch (error.substring(0, startOfErrorMessage)) {
+              const errorMessageType = error.substring(0, startOfErrorMessage);
+              switch (errorMessageType) {
                 default:
                   break;
                 case "[EMAIL]:":
