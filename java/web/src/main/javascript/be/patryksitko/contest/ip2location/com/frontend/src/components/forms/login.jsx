@@ -1,4 +1,6 @@
 import { useFormik } from "formik";
+import httpStatus from "http-status";
+import Cookies from "js-cookie";
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -9,6 +11,25 @@ import * as Yup from "yup";
 import updateLoginFormValues from "../../store/actions/form/login";
 import "./login.scss";
 
+function parseErrors(errors) {
+  const parsedErrors = {};
+  errors.forEach((error) => {
+    const startOfErrorMessage = error.indexOf(":") + 1;
+    const errorMessage = error.substring(startOfErrorMessage, error.length);
+    const errorMessageType = error.substring(0, startOfErrorMessage);
+    switch (errorMessageType) {
+      default:
+        break;
+      case "[EMAIL]:":
+        parsedErrors.email = errorMessage;
+        break;
+      case "[PASSWORD]:":
+        parsedErrors.password = errorMessage;
+    }
+  });
+  return parsedErrors;
+}
+
 const validationSchema = Yup.object({
   email: Yup.string().email().required("Email is required."),
   password: Yup.string().strongPassword().required("Password is required."),
@@ -16,7 +37,9 @@ const validationSchema = Yup.object({
 
 const mapStateToProps = ({ state }) => ({
   currentState: state,
+  csrfToken: state.csrfToken,
   loginValues: state.form.login,
+  fingerprint: state.fingerprint,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -29,7 +52,9 @@ function LoginForm({
   changePath,
   currentState,
   loginValues,
+  csrfToken,
   updateLoginFormValues,
+  fingerprint,
 }) {
   const navigateTo = useNavigate();
   const [initialValues] = useState({
@@ -37,7 +62,47 @@ function LoginForm({
     password: loginValues.password,
   });
   const [initialErrors] = useState(loginValues.errors);
-  const formik = useFormik({ validationSchema, initialValues, initialErrors });
+  const formik = useFormik({
+    validationSchema,
+    initialValues,
+    initialErrors,
+    onSubmit: async ({ email, password }, { setSubmitting, setErrors }) => {
+      try {
+        const result = await fetch("/api/user/login", {
+          headers: {
+            "CSRF-TOKEN": csrfToken,
+            "Content-Type": "Application/json",
+          },
+          credentials: "include",
+          method: "POST",
+          body: JSON.stringify({
+            email,
+            password,
+            fingerprint: fingerprint.visitorId,
+          }),
+        });
+        const { status, responseType, errors, body } = await result.json();
+        if (responseType === "ERROR") {
+          switch (httpStatus[status]) {
+            default:
+              break;
+            case httpStatus.NOT_FOUND:
+            case httpStatus.CONFLICT:
+              setErrors({ ...formik.errors, ...parseErrors(errors) });
+              break;
+          }
+        } else if (responseType === "SUCCESS") {
+          Cookies.set(
+            "authentication-token",
+            JSON.parse(body).authenticationToken
+          );
+        }
+      } catch (e) {
+      } finally {
+        setSubmitting(false);
+      }
+    },
+  });
 
   return (
     <Form className="login-form" onSubmit={formik.handleSubmit}>
