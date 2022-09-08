@@ -71,7 +71,15 @@ function LoginForm({
     password: registerValues.password,
     repassword: registerValues.repassword,
   });
-  const [initialErrors] = useState(registerValues.errors);
+  const [initialErrors] = useState(
+    (() =>
+      registerValues.errors.email?.includes(registerValues.email)
+        ? registerValues.errors
+        : (() => {
+            delete registerValues.errors.email;
+            return registerValues.errors;
+          })())()
+  );
   const formik = useFormik({
     validationSchema,
     initialValues,
@@ -87,7 +95,7 @@ function LoginForm({
             "Content-Type": "Application/json",
           },
           credentials: "include",
-          method: "POST",
+          method: "PUT",
           body: JSON.stringify({
             firstname,
             lastname,
@@ -120,6 +128,7 @@ function LoginForm({
               password: registerValues.password,
               repassword: registerValues.repassword,
               errors: { ...registerValues.errors, ...parsedErrors },
+              undirtyFormAllowed: responseType === "ERROR",
             });
           }
         }
@@ -219,8 +228,9 @@ function LoginForm({
             onBlur={formik.handleBlur}
             value={formik.values.email}
             isValid={
-              (formik.dirty && !initialErrors.email) ||
-              (!formik.errors.email && formik.values.email !== "")
+              (formik.touched.email || formik.values.email !== "") &&
+              ((formik.dirty && !initialErrors.email) ||
+                (!formik.errors.email && formik.values.email !== ""))
             }
             isInvalid={
               (!formik.dirty && initialErrors.email) ||
@@ -247,7 +257,7 @@ function LoginForm({
           <Button className="go-back" onClick={goBack}>
             go back
           </Button>
-          <Form.Label className="password-label">Password</Form.Label>
+          <Form.Label className="password">Password</Form.Label>
           <Form.Control
             disabled={formik.isSubmitting}
             name="password"
@@ -271,7 +281,10 @@ function LoginForm({
             feedback={formik.errors.password}
           />
         </Form.Group>
-        <div visible={formik.errors.password} className="feedback-invalid">
+        <div
+          visible={formik.errors.password ? true : false}
+          className="feedback-invalid"
+        >
           {formik.errors.password}
         </div>
 
@@ -307,7 +320,12 @@ function LoginForm({
           variant="primary"
           type="submit"
           className="register"
-          disabled={!(formik.isValid && formik.dirty) || formik.isSubmitting}
+          disabled={
+            !(
+              formik.isValid &&
+              (formik.dirty || registerValues.undirtyFormAllowed)
+            ) || formik.isSubmitting
+          }
         >
           Register
         </Button>
