@@ -45,7 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor(onConstructor = @__(@JsonCreator), access = AccessLevel.PUBLIC)
 @JsonRootName(value = "credeial", namespace = "credentials")
-@JsonIgnoreProperties({ "id", "user", "authenticationTokens", "fingerprint" })
+@JsonIgnoreProperties({ "id", "user", "authenticationTokens" })
 @JsonPropertyOrder({ "email" })
 @Entity
 @Table(name = "credentials")
