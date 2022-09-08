@@ -2,14 +2,15 @@
   "state": {
     "fingerprint": null,
     "form": {
-      "login": { "email": "", "password": "" },
+      "login": { "email": "", "password": "", "errors": {} },
       "register": {
         "firstname": "",
         "lastname": "",
         "email": "",
         "password": "",
         "repassword": "",
-        "errors": {}
+        "errors": {},
+        "undirtyFormAllowed": true
       }
     },
     "cookie": {
