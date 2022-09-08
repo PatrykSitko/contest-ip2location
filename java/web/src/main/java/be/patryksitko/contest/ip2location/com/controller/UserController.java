@@ -61,11 +61,13 @@ public class UserController {
             authenticationToken = userService.authenticateUser(credential);
         } catch (EmailUnregisteredException e) {
             log.error(e.getMessage());
+            credential.setFingerprint("hidden.");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ResponseBuilder.builder().status(HttpStatus.NOT_FOUND).errors(List.of(e.getMessage()))
                             .responseType(ResponseType.ERROR).body(credential.toJSON()).build());
         } catch (PasswordMismatchException e) {
             log.error(e.getMessage());
+            credential.setFingerprint("hidden.");
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(ResponseBuilder.builder().status(HttpStatus.CONFLICT).errors(List.of(e.getMessage()))
                             .responseType(ResponseType.ERROR).body(credential.toJSON()).build());
