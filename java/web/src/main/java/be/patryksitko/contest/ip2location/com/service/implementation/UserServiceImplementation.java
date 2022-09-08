@@ -63,11 +63,14 @@ public class UserServiceImplementation implements UserService {
                         .equals(fingerprint))
                 .findFirst();
         if (fingerprintedAuthenticationToken.isPresent()) {
-            return fingerprintedAuthenticationToken.get();
+            final AuthenticationToken authenticationToken = fingerprintedAuthenticationToken.get();
+            authenticationToken.setFingerprint("hidden.");
+            return authenticationToken;
         }
         AuthenticationToken registeredAuthenticationToken = authenticationTokenRepository.save(
                 AuthenticationToken.builder().id(null).credential(user.getCredential()).fingerprint(fingerprint)
                         .authenticationToken(UUID.randomUUID()).build());
+        registeredAuthenticationToken.setFingerprint("hidden.");
         return registeredAuthenticationToken;
     }
 }
