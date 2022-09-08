@@ -14,7 +14,8 @@
       }
     },
     "cookie": {
-      "CSRF-TOKEN": null
+      "CSRF-TOKEN": null,
+      "authentication-token": null
     },
     "window": {
       "inner": null,
