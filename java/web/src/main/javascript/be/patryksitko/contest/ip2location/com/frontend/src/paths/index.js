@@ -1,16 +1,21 @@
 import React from "react";
+import { connect } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 import Menu from "../components/menu";
 import LandingPage from "./path/landingPage";
 import LoginPage from "./path/loginPage";
 import RegisterPage from "./path/registerPage";
 
-function Paths({ user = { loggedIN: false } }) {
+const mapStateToProps = ({ state }) => ({
+  authenticationToken: state.cookie["authentication-token"],
+});
+
+function Paths({ authenticationToken }) {
   return (
     <>
-      {user.loggedIN && <Menu />}
+      {authenticationToken && <Menu />}
       <Routes>
-        {(user.loggedIN && (
+        {(authenticationToken && (
           <>
             <Route path="/" exact element={<LandingPage />} />
           </>
@@ -27,4 +32,4 @@ function Paths({ user = { loggedIN: false } }) {
   );
 }
 
-export default Paths;
+export default connect(mapStateToProps)(Paths);
