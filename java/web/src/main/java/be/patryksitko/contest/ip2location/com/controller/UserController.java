@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +23,7 @@ import be.patryksitko.contest.ip2location.com.helpers.exception.PasswordFormatEx
 import be.patryksitko.contest.ip2location.com.model.AuthenticationToken;
 import be.patryksitko.contest.ip2location.com.model.Credential;
 import be.patryksitko.contest.ip2location.com.model.User;
+import be.patryksitko.contest.ip2location.com.service.AuthenticationTokenService;
 import be.patryksitko.contest.ip2location.com.service.UserService;
 import be.patryksitko.contest.ip2location.com.service.exception.EmailRegisteredException;
 import be.patryksitko.contest.ip2location.com.service.exception.EmailUnregisteredException;
@@ -35,6 +37,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private AuthenticationTokenService authenticationTokenService;
 
     @PutMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<Object> registerUser(@RequestBody @Valid User user) {
@@ -75,5 +80,19 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .body(ResponseBuilder.builder().status(HttpStatus.FOUND).responseType(ResponseType.SUCCESS)
                         .body(authenticationToken.toJSON()).build());
+    }
+
+    @PostMapping(value = "/validate-authentication-token", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity<Object> validateAuthenticationToken(
+            @RequestBody @Valid AuthenticationToken authenticationToken) {
+        final boolean authenticationTokenIsValid = authenticationTokenService
+                .validateAuthenticationToken(authenticationToken);
+        final HttpStatus statusOfHttp = authenticationTokenIsValid ? HttpStatus.ACCEPTED : HttpStatus.UNAUTHORIZED;
+        final JSONObject responseBody = new JSONObject();
+        responseBody.put("providedAuthenticationTokenIsValid", authenticationTokenIsValid);
+        return ResponseEntity.status(statusOfHttp)
+                .body(ResponseBuilder.builder().status(statusOfHttp)
+                        .responseType(authenticationTokenIsValid ? ResponseType.SUCCESS : ResponseType.ERROR)
+                        .body(responseBody.toString()).build());
     }
 }
