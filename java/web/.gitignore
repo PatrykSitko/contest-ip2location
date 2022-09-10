@@ -6,6 +6,7 @@ target/
 
 ### PRIVATE RESOURCES ###
 **/resources/.env
+**/resources/ip2location.properties
 
 ### STS ###
 .apt_generated
