@@ -87,7 +87,7 @@ public class UserController {
             @RequestBody @Valid AuthenticationToken authenticationToken) {
         final boolean authenticationTokenIsValid = authenticationTokenService
                 .validateAuthenticationToken(authenticationToken);
-        final HttpStatus statusOfHttp = authenticationTokenIsValid ? HttpStatus.FOUND : HttpStatus.NOT_FOUND;
+        final HttpStatus statusOfHttp = authenticationTokenIsValid ? HttpStatus.ACCEPTED : HttpStatus.NOT_ACCEPTABLE;
         final JSONObject responseBody = new JSONObject();
         responseBody.put("isProvidedAuthenticationTokenValid", authenticationTokenIsValid);
         return ResponseEntity.status(statusOfHttp)
