@@ -87,12 +87,12 @@ public class UserController {
             @RequestBody @Valid AuthenticationToken authenticationToken) {
         final boolean authenticationTokenIsValid = authenticationTokenService
                 .validateAuthenticationToken(authenticationToken);
-        final HttpStatus statusOfHttp = authenticationTokenIsValid ? HttpStatus.ACCEPTED : HttpStatus.UNAUTHORIZED;
+        final HttpStatus statusOfHttp = authenticationTokenIsValid ? HttpStatus.FOUND : HttpStatus.NOT_FOUND;
         final JSONObject responseBody = new JSONObject();
-        responseBody.put("providedAuthenticationTokenIsValid", authenticationTokenIsValid);
+        responseBody.put("isProvidedAuthenticationTokenValid", authenticationTokenIsValid);
         return ResponseEntity.status(statusOfHttp)
                 .body(ResponseBuilder.builder().status(statusOfHttp)
-                        .responseType(authenticationTokenIsValid ? ResponseType.SUCCESS : ResponseType.ERROR)
+                        .responseType(ResponseType.SUCCESS)
                         .body(responseBody.toString()).build());
     }
 }
