@@ -23,18 +23,22 @@ function useCheckAuthenticationToken(
           fingerprint: fingerprint.visitorId,
         }),
       });
-      const { status, body: body_ } = await result.json();
-      const { isProvidedAuthenticationTokenValid } = JSON.parse(body_);
-      switch (httpStatus[status]) {
-        default:
-        case httpStatus.ACCEPTED:
-          break;
-        case httpStatus.UNPROCESSABLE_ENTITY:
-        case httpStatus.NOT_ACCEPTABLE:
-          if (!isProvidedAuthenticationTokenValid) {
-            Cookies.remove("authentication-token");
-          }
-          break;
+      if (
+        httpStatus[await result.status] !== httpStatus.INTERNAL_SERVER_ERROR
+      ) {
+        const { status, body: body_ } = await result.json();
+        const { isProvidedAuthenticationTokenValid } = JSON.parse(body_);
+        switch (httpStatus[status]) {
+          default:
+          case httpStatus.ACCEPTED:
+            break;
+          case httpStatus.UNPROCESSABLE_ENTITY:
+          case httpStatus.NOT_ACCEPTABLE:
+            if (!isProvidedAuthenticationTokenValid) {
+              Cookies.remove("authentication-token");
+            }
+            break;
+        }
       }
     })();
   }, [csrfToken, fingerprint, authenticationToken]);
