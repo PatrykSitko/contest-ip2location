@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -71,6 +72,7 @@ public class AuthenticationToken implements Serializable, Cloneable {
     private String fingerprint;
 
     @JsonProperty("authenticationToken")
+    @JsonAlias({ "authenticationToken", "authentication-token" })
     @Column(name = "authentication_token", nullable = false)
     private UUID authenticationToken;
 
