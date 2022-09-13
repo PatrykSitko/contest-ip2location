@@ -28,7 +28,7 @@ public class Ip2locationDatabase {
     private volatile boolean ip2locationV6Loaded = false;
 
     // @Value("${ip2location.token}")
-    private String authenticationToken = "1FCRhWx3qBrxt9LXD6fdjBJXk3xfFZ3wbxqTievWjTMAnUsTjfVK75X6HzE9H5Hr";
+    private String authenticationToken = "";
 
     private URL databaseIPV4;
     {
