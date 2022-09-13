@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Route, Routes } from "react-router-dom";
+import Mention from "../components/mention";
 import Menu from "../components/menu";
 import LandingPage from "./path/landingPage";
 import LoginPage from "./path/loginPage";
@@ -28,6 +29,7 @@ function Paths({ authenticationToken }) {
           </>
         )}
       </Routes>
+      <Mention />
     </>
   );
 }
