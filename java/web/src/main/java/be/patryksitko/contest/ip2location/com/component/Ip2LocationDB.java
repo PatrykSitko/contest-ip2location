@@ -1,4 +1,4 @@
-package be.patryksitko.contest.ip2location.com.other;
+package be.patryksitko.contest.ip2location.com.component;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -11,6 +11,7 @@ import java.util.zip.ZipInputStream;
 import javax.inject.Singleton;
 
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 
 import com.ip2location.IP2Location;
 import com.ip2location.IPResult;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Singleton
+@Component
 public class Ip2LocationDB {
 
     public static class InitializationException extends RuntimeException {
@@ -70,14 +72,14 @@ public class Ip2LocationDB {
     private static volatile byte[] v4Content;
     private static volatile IP2Location ip2LocationV4;
     private static volatile boolean ip2LocationV4Opened;
-    private static volatile boolean ip2LocationV4OpeningFinnished;
+    private static volatile boolean ip2LocationV4OpeningFinnished = true;
     private static volatile LocalDateTime ipV4Downloaded;
 
     // v6
     private static volatile byte[] v6Content;
     private static volatile IP2Location ip2LocationV6;
     private static volatile boolean ip2LocationV6Opened;
-    private static volatile boolean ip2LocationV6OpeningFinnished;
+    private static volatile boolean ip2LocationV6OpeningFinnished = true;
     private static volatile LocalDateTime ipV6Downloaded;
 
     public Ip2LocationDB() throws InitializationException {
@@ -93,6 +95,7 @@ public class Ip2LocationDB {
         } while (dbContent.isEmpty());
         ipV4Downloaded = LocalDateTime.now();
         v4Content = dbContent.get();
+        System.out.println("v4-downloaded.");
     };
 
     private static Runnable ipV4InitializatorRunnable = () -> {
@@ -128,8 +131,9 @@ public class Ip2LocationDB {
         do {
             dbContent = Download.DB11LITEBIN.fetch();
         } while (dbContent.isEmpty());
-        ipV4Downloaded = LocalDateTime.now();
+        ipV6Downloaded = LocalDateTime.now();
         v6Content = dbContent.get();
+        System.out.println("v6-downloaded.");
     };
 
     private static Runnable ipV6InitializatorRunnable = () -> {
