@@ -1,8 +1,12 @@
 package be.patryksitko.contest.ip2location.com.component;
 
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -215,6 +219,29 @@ public class Ip2LocationDB {
 
     public boolean isIpV6QueryUsable() {
         return ip2LocationV6Opened;
+    }
+
+    public boolean isIPv4(String IPAddress) throws UnknownHostException {
+        return InetAddress.getByName(IPAddress) instanceof Inet4Address;
+    }
+
+    public boolean isIPv6(String IPAddress) throws UnknownHostException {
+        return InetAddress.getByName(IPAddress) instanceof Inet6Address;
+    }
+
+    public Optional<IPResult> IPQuery(String IPAddress) {
+        try {
+            if (this.isIPv4(IPAddress)) {
+                return this.IPQueryV4(IPAddress);
+            }
+            if (this.isIPv6(IPAddress)) {
+                return this.IPQueryV6(IPAddress);
+            }
+        } catch (UnknownHostException e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 
     public Optional<IPResult> IPQueryV4(String IPv4Address) {
