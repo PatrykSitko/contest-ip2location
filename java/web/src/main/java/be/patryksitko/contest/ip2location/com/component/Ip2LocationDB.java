@@ -239,7 +239,6 @@ public class Ip2LocationDB {
             }
         } catch (UnknownHostException e) {
             log.error(e.getMessage());
-            e.printStackTrace();
         }
         return Optional.empty();
     }
