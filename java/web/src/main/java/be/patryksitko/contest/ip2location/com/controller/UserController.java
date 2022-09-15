@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import be.patryksitko.contest.ip2location.com.builders.ResponseBuilder;
-import be.patryksitko.contest.ip2location.com.builders.ResponseBuilder.ResponseType;
-import be.patryksitko.contest.ip2location.com.helpers.BCryptPasswordEncoder;
-import be.patryksitko.contest.ip2location.com.helpers.exception.PasswordFormatException;
 import be.patryksitko.contest.ip2location.com.model.AuthenticationToken;
 import be.patryksitko.contest.ip2location.com.model.Credential;
 import be.patryksitko.contest.ip2location.com.model.User;
+import be.patryksitko.contest.ip2location.com.other.builder.ResponseBuilder;
+import be.patryksitko.contest.ip2location.com.other.builder.ResponseBuilder.ResponseType;
+import be.patryksitko.contest.ip2location.com.other.helper.BCryptPasswordEncoder;
+import be.patryksitko.contest.ip2location.com.other.helper.exception.PasswordFormatException;
 import be.patryksitko.contest.ip2location.com.service.AuthenticationTokenService;
 import be.patryksitko.contest.ip2location.com.service.UserService;
 import be.patryksitko.contest.ip2location.com.service.exception.EmailRegisteredException;

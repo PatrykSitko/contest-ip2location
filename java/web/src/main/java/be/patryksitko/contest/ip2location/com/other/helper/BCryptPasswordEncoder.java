@@ -1,6 +1,6 @@
-package be.patryksitko.contest.ip2location.com.helpers;
+package be.patryksitko.contest.ip2location.com.other.helper;
 
-import be.patryksitko.contest.ip2location.com.helpers.exception.PasswordFormatException;
+import be.patryksitko.contest.ip2location.com.other.helper.exception.PasswordFormatException;
 
 public interface BCryptPasswordEncoder {
 

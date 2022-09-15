@@ -7,10 +7,10 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import be.patryksitko.contest.ip2location.com.helpers.BCryptPasswordEncoder;
 import be.patryksitko.contest.ip2location.com.model.AuthenticationToken;
 import be.patryksitko.contest.ip2location.com.model.Credential;
 import be.patryksitko.contest.ip2location.com.model.User;
+import be.patryksitko.contest.ip2location.com.other.helper.BCryptPasswordEncoder;
 import be.patryksitko.contest.ip2location.com.repositoryDAO.AuthenticationTokenRepository;
 import be.patryksitko.contest.ip2location.com.repositoryDAO.UserRepository;
 import be.patryksitko.contest.ip2location.com.service.UserService;

@@ -13,8 +13,8 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
-import be.patryksitko.contest.ip2location.com.builders.ResponseBuilder;
-import be.patryksitko.contest.ip2location.com.builders.ResponseBuilder.ResponseType;
+import be.patryksitko.contest.ip2location.com.other.builder.ResponseBuilder;
+import be.patryksitko.contest.ip2location.com.other.builder.ResponseBuilder.ResponseType;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -1,4 +1,4 @@
-package be.patryksitko.contest.ip2location.com.builders;
+package be.patryksitko.contest.ip2location.com.other.builder;
 
 import java.util.List;
 
