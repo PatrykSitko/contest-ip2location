@@ -288,19 +288,23 @@ public class Ip2LocationDB {
     }
 
     public Optional<IPResult> IPQueryV4(String IPv4Address) {
-        try {
-            return Optional.of(ip2LocationV4.IPQuery(IPv4Address));
-        } catch (IOException e) {
-            log.error(e.getMessage());
+        if (ip2LocationV4 != null) {
+            try {
+                return Optional.of(ip2LocationV4.IPQuery(IPv4Address));
+            } catch (IOException e) {
+                log.error(e.getMessage());
+            }
         }
         return Optional.empty();
     }
 
     public Optional<IPResult> IPQueryV6(String IPv6Address) {
-        try {
-            return Optional.of(ip2LocationV6.IPQuery(IPv6Address));
-        } catch (IOException e) {
-            log.error(e.getMessage());
+        if (ip2LocationV6 != null) {
+            try {
+                return Optional.of(ip2LocationV6.IPQuery(IPv6Address));
+            } catch (IOException e) {
+                log.error(e.getMessage());
+            }
         }
         return Optional.empty();
     }
