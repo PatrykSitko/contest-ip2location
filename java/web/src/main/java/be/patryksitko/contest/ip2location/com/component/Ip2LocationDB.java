@@ -1,6 +1,9 @@
 package be.patryksitko.contest.ip2location.com.component;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -9,6 +12,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.zip.ZipInputStream;
 
@@ -20,6 +24,9 @@ import org.springframework.stereotype.Component;
 import com.ip2location.IP2Location;
 import com.ip2location.IPResult;
 
+import be.patryksitko.contest.ip2location.com.component.exception.DownloadLimitException;
+import be.patryksitko.contest.ip2location.com.component.exception.InitializationException;
+import be.patryksitko.contest.ip2location.com.other.anonFunctions.ByteArrayFunction;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -27,18 +34,31 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class Ip2LocationDB {
 
-    public static class InitializationException extends RuntimeException {
-        public InitializationException() {
-            super("Could not initialize databases.");
-        }
-    }
-
     @PropertySource(value = "classpath:ip2location.properties")
     public static enum Download {
         DB11LITEBIN, DB11LITEBINIPV6;
 
+        public static enum DownloadedDataExceptionTriggers {
+            THIS_FILE_CAN_ONLY_BE_DOWNLOADED_5_TIMES_PER_HOUR(new byte[] { 84, 72, 73, 83,
+                    32,
+                    70, 73, 76, 69, 32, 67, 65, 78, 32, 79, 78, 76, 89, 32, 66, 69, 32, 68, 79, 87, 78, 76, 79, 65, 68,
+                    69,
+                    68,
+                    32, 53, 32, 84, 73, 77, 69, 83, 32, 80, 69, 82, 32, 72, 79, 85, 82 });
+
+            private byte[] exceptionArray;
+
+            private DownloadedDataExceptionTriggers(byte[] exceptionArray) {
+                this.exceptionArray = exceptionArray;
+            }
+
+            public byte[] getArray() {
+                return this.exceptionArray;
+            }
+        }
+
         // @Value("${ip2location.token}")
-        private static final String authenticationToken = "";
+        private static final String authenticationToken = "1FCRhWx3qBrxt9LXD6fdjBJXk3xfFZ3wbxqTievWjTMAnUsTjfVK75X6HzE9H5Hr";
         private URL downloadURL;
 
         private Download() {
@@ -50,25 +70,42 @@ public class Ip2LocationDB {
             }
         }
 
+        private byte[] readInputSteam(InputStream in) throws IOException {
+            byte[] content;
+            final ArrayList<Byte> contentBuffer = new ArrayList<>();
+            boolean finnished = true;
+            do {
+                byte dataBuffer[] = new byte[in.available()];
+                finnished = in.read(dataBuffer, 0, dataBuffer.length) != -1;
+                for (byte character : dataBuffer) {
+                    contentBuffer.add(character);
+                }
+            } while (!finnished);
+            content = new byte[contentBuffer.size()];
+            for (int index = 0; index < content.length; index++) {
+                content[index] = contentBuffer.get(index);
+            }
+            return content;
+        }
+
         public Optional<byte[]> fetch() {
-            byte[] requestedContent;
-            final ArrayList<Byte> downloadedContent = new ArrayList<>();
-            try (ZipInputStream in = new ZipInputStream(this.downloadURL.openStream());) {
-                byte dataBuffer[] = new byte[1024];
-                while (in.read(dataBuffer, 0, 1024) != -1) {
-                    for (byte character : dataBuffer) {
-                        downloadedContent.add(character);
-                    }
+
+            final ByteArrayFunction checkForDownloadExceptions = (byte[] bytes) -> {
+                if (Arrays.equals(bytes,
+                        DownloadedDataExceptionTriggers.THIS_FILE_CAN_ONLY_BE_DOWNLOADED_5_TIMES_PER_HOUR.getArray())) {
+                    throw new DownloadLimitException();
                 }
-                requestedContent = new byte[downloadedContent.size()];
-                for (int index = 0; index < requestedContent.length; index++) {
-                    requestedContent[index] = downloadedContent.get(index);
-                }
-            } catch (IOException e) {
+                return bytes;
+            };
+
+            try (BufferedInputStream in = new BufferedInputStream(this.downloadURL.openStream());
+                    ZipInputStream zipIn = new ZipInputStream(
+                            new ByteArrayInputStream(checkForDownloadExceptions.__(readInputSteam(in))))) {
+                return Optional.of(readInputSteam(zipIn));
+            } catch (IOException | DownloadLimitException e) {
                 log.error(e.getMessage());
                 return Optional.empty();
             }
-            return Optional.of(requestedContent);
         }
     }
 
@@ -99,7 +136,6 @@ public class Ip2LocationDB {
         } while (dbContent.isEmpty());
         ipV4Downloaded = LocalDateTime.now();
         v4Content = dbContent.get();
-        System.out.println("v4-downloaded.");
     };
 
     private static Runnable ipV4InitializatorRunnable = () -> {
@@ -133,11 +169,10 @@ public class Ip2LocationDB {
         ipV6Downloaded = null;
         Optional<byte[]> dbContent;
         do {
-            dbContent = Download.DB11LITEBIN.fetch();
+            dbContent = Download.DB11LITEBINIPV6.fetch();
         } while (dbContent.isEmpty());
         ipV6Downloaded = LocalDateTime.now();
         v6Content = dbContent.get();
-        System.out.println("v6-downloaded.");
     };
 
     private static Runnable ipV6InitializatorRunnable = () -> {
@@ -169,8 +204,12 @@ public class Ip2LocationDB {
 
     private void fetchData() {
         final ArrayList<Thread> threads = new ArrayList<>();
-        threads.add(new Thread(ipV4DownloadRunnable));
-        threads.add(new Thread(ipV6DownloadRunnable));
+        final Thread ipV4DownloadThread = new Thread(ipV4DownloadRunnable);
+        ipV4DownloadThread.setName("ipV4Download");
+        threads.add(ipV4DownloadThread);
+        final Thread ipV6DownloadThread = new Thread(ipV6DownloadRunnable);
+        ipV6DownloadThread.setName("ipV6Download");
+        threads.add(new Thread(ipV6DownloadThread));
         for (Thread thread : threads) {
             thread.setDaemon(true);
             thread.start();
@@ -191,10 +230,14 @@ public class Ip2LocationDB {
                 }
                 final ArrayList<Thread> threads = new ArrayList<>();
                 if (!ip2LocationV4Opened && ip2LocationV4OpeningFinnished) {
-                    threads.add(new Thread(ipV4InitializatorRunnable));
+                    final Thread ipV4InitializatorThread = new Thread(ipV4InitializatorRunnable);
+                    ipV4InitializatorThread.setName("ipV4Initializator");
+                    threads.add(ipV4InitializatorThread);
                 }
                 if (!ip2LocationV6Opened && ip2LocationV6OpeningFinnished) {
-                    threads.add(new Thread(ipV6InitializatorRunnable));
+                    final Thread ipV6InitializatorThread = new Thread(ipV6InitializatorRunnable);
+                    ipV6InitializatorThread.setName("ipV6Initializator");
+                    threads.add(ipV6InitializatorThread);
                 }
                 for (Thread thread : threads) {
                     thread.setDaemon(true);
@@ -205,6 +248,7 @@ public class Ip2LocationDB {
                 }
             } while (!ip2LocationV4Opened || !ip2LocationV6Opened);
         });
+        initializatorThread.setName("initializator");
         initializatorThread.setDaemon(true);
         initializatorThread.start();
     }
