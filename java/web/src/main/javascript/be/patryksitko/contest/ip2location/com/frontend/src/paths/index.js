@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 import Mention from "../components/mention";
 import Menu from "../components/menu";
+import IpV4Lookup from "./path/ipV4Lookup";
 import LandingPage from "./path/landingPage";
 import LoginPage from "./path/loginPage";
 import RegisterPage from "./path/registerPage";
@@ -19,6 +20,7 @@ function Paths({ authenticationToken }) {
         {(authenticationToken && (
           <>
             <Route path="/" exact element={<LandingPage />} />
+            <Route path="/ipV4-lookup" exact element={<IpV4Lookup />} />
           </>
         )) || (
           <>
