@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -17,16 +18,26 @@ import java.util.Optional;
 import java.util.zip.ZipInputStream;
 
 import javax.inject.Singleton;
+import javax.servlet.UnavailableException;
 
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ip2location.IP2Location;
 import com.ip2location.IPResult;
 
 import be.patryksitko.contest.ip2location.com.component.exception.DownloadLimitException;
 import be.patryksitko.contest.ip2location.com.component.exception.InitializationException;
 import be.patryksitko.contest.ip2location.com.other.anonFunctions.ByteArrayFunction;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -34,9 +45,188 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class Ip2LocationDB {
 
+    @ToString
+    @EqualsAndHashCode
+    public static class IPResultJSONizer implements Serializable, Cloneable {
+
+        @JsonIgnore
+        @Getter(AccessLevel.NONE)
+        @Setter(AccessLevel.NONE)
+        private static final long serialVersionUID = 1L;
+
+        private final IPResult result;
+
+        private final String ipAddress;
+
+        public IPResultJSONizer(IPResult result, String ipAddress) {
+            this.result = result;
+            this.ipAddress = ipAddress;
+        }
+
+        @JsonProperty("ip address")
+        public String getIpAddress() {
+            return ipAddress;
+        }
+
+        @JsonProperty("ip address version")
+        public String getIpAddressVersion() {
+            try {
+                if (Ip2LocationDB.isIPv4(this.ipAddress)) {
+                    return "v4";
+                }
+                if (Ip2LocationDB.isIPv6(this.ipAddress)) {
+                    return "v6";
+                }
+            } catch (UnknownHostException e) {
+                log.error(e.getMessage());
+            }
+            try {
+                throw new UnavailableException("Ip-address version in not specified.");
+            } catch (UnavailableException e) {
+                log.error(e.getMessage());
+            }
+            return null;
+        }
+
+        @JsonProperty("address type")
+        public String getAddressType() {
+            return result.getAddressType();
+        }
+
+        @JsonProperty("area code")
+        public String getAreaCode() {
+            return result.getAreaCode();
+        }
+
+        @JsonProperty("category")
+        public String getCategory() {
+            return result.getCategory();
+        }
+
+        @JsonProperty("city")
+        public String getCity() {
+            return result.getCity();
+        }
+
+        @JsonProperty("country long")
+        public String getCountryLong() {
+            return result.getCountryLong();
+        }
+
+        @JsonProperty("country short")
+        public String getCountryShort() {
+            return result.getCountryShort();
+        }
+
+        @JsonProperty("domain")
+        public String getDomain() {
+            return result.getDomain();
+        }
+
+        @JsonProperty("IDD code")
+        public String getIDDCode() {
+            return result.getIDDCode();
+        }
+
+        @JsonProperty("ISP")
+        public String getISP() {
+            return result.getISP();
+        }
+
+        @JsonProperty("MCC")
+        public String getMCC() {
+            return result.getMCC();
+        }
+
+        @JsonProperty("MNC")
+        public String getMNC() {
+            return result.getMNC();
+        }
+
+        @JsonProperty("mobile band")
+        public String getMobileBand() {
+            return result.getMobileBrand();
+        }
+
+        @JsonProperty("network speed")
+        public String getNetSpeed() {
+            return result.getNetSpeed();
+        }
+
+        @JsonProperty("region")
+        public String getRegion() {
+            return result.getRegion();
+        }
+
+        @JsonProperty("status")
+        public String getStatus() {
+            return result.getStatus();
+        }
+
+        @JsonProperty("time zone")
+        public String getTimeZone() {
+            return result.getTimeZone();
+        }
+
+        @JsonProperty("usage type")
+        public String getUsageType() {
+            return result.getUsageType();
+        }
+
+        @JsonProperty("weather station code")
+        public String getWeatherStationCode() {
+            return result.getWeatherStationCode();
+        }
+
+        @JsonProperty("weather station name")
+        public String getWeatherStationName() {
+            return result.getWeatherStationName();
+        }
+
+        @JsonProperty("zip code")
+        public String getZipCode() {
+            return result.getZipCode();
+        }
+
+        @JsonProperty("elevation")
+        public float getElevation() {
+            return result.getElevation();
+        }
+
+        @JsonProperty("latitude")
+        public float getLatitude() {
+            return result.getLatitude();
+        }
+
+        @JsonProperty("longitude")
+        public float getLongitude() {
+            return result.getLongitude();
+        }
+
+        public String toJSON() {
+            final ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                return objectMapper.writeValueAsString(this);
+            } catch (JsonProcessingException e) {
+                log.error(e.getMessage());
+                return null;
+            }
+        }
+
+        public IPResultJSONizer clone() {
+            try {
+                return (IPResultJSONizer) super.clone();
+            } catch (CloneNotSupportedException e) {
+                log.error(e.getMessage());
+                return null;
+            }
+        }
+    }
+
     @PropertySource(value = "classpath:ip2location.properties")
     public static enum Download {
-        DB11LITEBIN, DB11LITEBINIPV6;
+        DB11LITEBIN(Ip2LocationDB.class.getResource("/static/rsc/IP2LOCATION-LITE-DB11.BIN.ZIP")),
+        DB11LITEBINIPV6(Ip2LocationDB.class.getResource("/static/rsc/IP2LOCATION-LITE-DB11.IPV6.BIN.ZIP"));
 
         public static enum DownloadedDataExceptionTriggers {
             THIS_FILE_CAN_ONLY_BE_DOWNLOADED_5_TIMES_PER_HOUR(new byte[] { 84, 72, 73, 83,
@@ -57,14 +247,19 @@ public class Ip2LocationDB {
             }
         }
 
+        // @Value does not want to work. I will refresh the token once the issue get's
+        // fixed.
         // @Value("${ip2location.token}")
         private static final String authenticationToken = "1FCRhWx3qBrxt9LXD6fdjBJXk3xfFZ3wbxqTievWjTMAnUsTjfVK75X6HzE9H5Hr";
         private URL downloadURL;
 
-        private Download() {
+        private Download(URL local) {
+            // for dev-purposes only, as the file can be downloaded only 5 times an hour.
+            // this.downloadURL = local;
             try {
                 this.downloadURL = new URL(
-                        "https://www.ip2location.com/download/?token=" + authenticationToken + "&file=" + this.name());
+                        "https://www.ip2location.com/download/?token=" + authenticationToken +
+                                "&file=" + this.name());
             } catch (MalformedURLException e) {
                 log.error(e.getMessage());
             }
@@ -76,7 +271,7 @@ public class Ip2LocationDB {
             boolean finnished = true;
             do {
                 byte dataBuffer[] = new byte[in.available()];
-                finnished = in.read(dataBuffer, 0, dataBuffer.length) != -1;
+                finnished = in.read(dataBuffer, 0, dataBuffer.length) <= 0;
                 for (byte character : dataBuffer) {
                     contentBuffer.add(character);
                 }
@@ -265,20 +460,20 @@ public class Ip2LocationDB {
         return ip2LocationV6Opened;
     }
 
-    public boolean isIPv4(String IPAddress) throws UnknownHostException {
+    public static boolean isIPv4(String IPAddress) throws UnknownHostException {
         return InetAddress.getByName(IPAddress) instanceof Inet4Address;
     }
 
-    public boolean isIPv6(String IPAddress) throws UnknownHostException {
+    public static boolean isIPv6(String IPAddress) throws UnknownHostException {
         return InetAddress.getByName(IPAddress) instanceof Inet6Address;
     }
 
     public Optional<IPResult> IPQuery(String IPAddress) {
         try {
-            if (this.isIPv4(IPAddress)) {
+            if (Ip2LocationDB.isIPv4(IPAddress)) {
                 return this.IPQueryV4(IPAddress);
             }
-            if (this.isIPv6(IPAddress)) {
+            if (Ip2LocationDB.isIPv6(IPAddress)) {
                 return this.IPQueryV6(IPAddress);
             }
         } catch (UnknownHostException e) {
