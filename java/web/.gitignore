@@ -7,6 +7,8 @@ target/
 ### PRIVATE RESOURCES ###
 **/resources/.env
 **/resources/ip2location.properties
+**/resources/static/rsc/IP2LOCATION-LITE-DB11.BIN.ZIP
+**/resources/static/rsc/IP2LOCATION-LITE-DB11.IPV6.BIN.ZIP
 
 ### STS ###
 .apt_generated
