@@ -14,7 +14,7 @@
 	<name>contest.ip2location.com by Patryk Sitko</name>
 	<description>Spring Boot ip2location contest entry.</description>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>18</java.version>
 		<frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
 		<node.version>v17.0.0</node.version>
 		<npm.version>8.18.0</npm.version>
@@ -104,6 +104,14 @@
 							</execution>
 						</executions>
 					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.19</version>
+						<configuration>
+							<argLine>-Xmx1024m</argLine>
+						</configuration>
+					  </plugin>
 				</plugins>
 			</build>
 			<properties>
