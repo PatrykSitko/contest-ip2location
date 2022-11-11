@@ -9,6 +9,7 @@ target/
 **/resources/ip2location.properties
 **/resources/static/rsc/IP2LOCATION-LITE-DB11.BIN.ZIP
 **/resources/static/rsc/IP2LOCATION-LITE-DB11.IPV6.BIN.ZIP
+**/resources/ui-models
 
 ### STS ###
 .apt_generated

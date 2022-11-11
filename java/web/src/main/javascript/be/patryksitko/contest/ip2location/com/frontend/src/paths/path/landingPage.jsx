@@ -1,7 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
 import {
+  ClientDataset1,
+  ClientDataset2,
   ClientIp,
+  ClientLocationMapping,
   storeClientIpDataAction,
 } from "../../components/client-ip-data";
 import useCheckAuthenticationToken from "../../hooks/useCheckAuthenticationToken";
@@ -28,9 +31,12 @@ function LandingPage({
   useCheckAuthenticationToken(csrfToken, fingerprint, authenticationToken);
   useFetchClientIpData(myIpData, storeClientIpData);
   return (
-    <div>
+    <>
       <ClientIp />
-    </div>
+      <ClientDataset1 />
+      <ClientLocationMapping />
+      <ClientDataset2 />
+    </>
   );
 }
 
